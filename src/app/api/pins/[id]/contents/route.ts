@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { addPinContent } from "@/lib/services/pin-detail";
-import { moderateTexts } from "@/lib/moderation";
+import { moderateTexts, moderateMediaCaption } from "@/lib/moderation";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { checkRateLimit, getClientKey } from "@/lib/rate-limit";
 import { uploadMedia } from "@/lib/supabase/storage";
@@ -95,7 +95,7 @@ export async function POST(
         }
       }
 
-      const moderation = await moderateTexts([textContent ?? "", authorAlias ?? ""]);
+      const moderation = await moderateMediaCaption([textContent ?? "", authorAlias ?? ""]);
       if (!moderation.approved) {
         return NextResponse.json({ error: moderation.reason }, { status: 422 });
       }
@@ -119,7 +119,7 @@ export async function POST(
           textContent,
           mediaUrl: uploaded.url,
           authorAlias,
-          autoApprove: false,
+          autoApprove: moderation.autoApprove,
         });
 
         if (!result) {
@@ -130,8 +130,12 @@ export async function POST(
       }
 
       const count = created.length;
-      const message =
-        count === 1
+      const allAutoApproved = created.every((item) => !item?.pending);
+      const message = allAutoApproved
+        ? count === 1
+          ? "Innhold publisert!"
+          : `${count} bilder publisert!`
+        : count === 1
           ? "Sendt — vises når godkjent."
           : `Sendt ${count} bilder — vises når godkjent.`;
 
@@ -139,7 +143,7 @@ export async function POST(
         {
           content: created[0]?.content,
           contents: created.map((item) => item!.content),
-          pending: true,
+          pending: !allAutoApproved,
           message,
         },
         { status: 201 },
@@ -171,7 +175,7 @@ export async function POST(
       type: "TEXT",
       textContent: parsed.data.textContent,
       authorAlias: parsed.data.authorAlias,
-      autoApprove: true,
+      autoApprove: moderation.autoApprove,
     });
 
     if (!result) {

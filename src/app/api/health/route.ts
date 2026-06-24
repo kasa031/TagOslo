@@ -5,6 +5,7 @@ import {
   isSupabaseConfigured,
   isTurnstileConfigured,
 } from "@/lib/config/free-tier";
+import { isFreeAiModerationConfigured, getFreeAiProvider } from "@/lib/moderation";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
 export async function GET() {
@@ -13,6 +14,8 @@ export async function GET() {
     mapbox: isMapboxConfigured(),
     supabaseStorage: isSupabaseConfigured(),
     turnstile: isTurnstileConfigured(),
+    moderationAi: isFreeAiModerationConfigured(),
+    moderationAiProvider: getFreeAiProvider(),
   };
 
   const readyForProduction =

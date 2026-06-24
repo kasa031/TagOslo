@@ -272,8 +272,8 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
             placeholder="Del lokalhistorie, solforhold eller anbefalinger …"
           />
           <p className="-mt-2 text-xs text-oslo-muted">
-            Stedet vises på kartet med en gang. Tekst her sjekkes manuelt før den blir synlig.
-            Grovt språk stoppes automatisk.
+            Stedet vises på kartet med en gang. Godkjent tekst publiseres automatisk.
+            Grovt språk og kontaktinfo stoppes.
           </p>
 
           <Input

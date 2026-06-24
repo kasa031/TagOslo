@@ -94,7 +94,7 @@ export async function createMapPin(data: {
               type: "TEXT",
               textContent: data.story,
               authorAlias: data.authorAlias,
-              moderationStatus: "PENDING",
+              moderationStatus: "APPROVED",
             },
           }
         : undefined,

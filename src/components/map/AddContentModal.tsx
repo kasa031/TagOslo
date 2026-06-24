@@ -189,7 +189,7 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
                 <p className="text-xs text-oslo-muted">
                   Maks {mode === "IMAGE" ? "5 MB per bilde" : mode === "VIDEO" ? "20 MB" : "10 MB"}.
                   {mode === "IMAGE"
-                    ? " Bilder sjekkes manuelt før de vises offentlig."
+                    ? " Bilder sjekkes manuelt før de vises (gratis bilde-AI finnes ikke ennå)."
                     : " Media sjekkes manuelt før publisering."}
                 </p>
               </div>
