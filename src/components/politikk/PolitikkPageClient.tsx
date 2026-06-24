@@ -110,18 +110,12 @@ export function PolitikkPageClient({
           }`}
         >
           <MessageSquare className="h-4 w-4" />
-          Politikere ({filteredPoliticians.length})
+          Politikere og tilbakemeldinger ({filteredPoliticians.length})
         </button>
       </div>
 
       {activeTab === "polls" && (
-        <div id="polls-panel" role="tabpanel" aria-labelledby="polls-tab">
-          <div className="mb-4">
-            <TurnstileWidget
-              onVerify={setTurnstileToken}
-              onExpire={() => setTurnstileToken("")}
-            />
-          </div>
+        <div id="polls-panel" role="tabpanel" aria-labelledby="polls-tab" className="pb-24">
           <div className="grid gap-4 md:grid-cols-2">
             {filteredPolls.map((poll) => (
               <PollCard
@@ -136,17 +130,60 @@ export function PolitikkPageClient({
               />
             ))}
             {filteredPolls.length === 0 && (
-              <Card>
-                <p className="text-sm text-oslo-muted">Ingen polls her.</p>
+              <Card className="md:col-span-2">
+                <p className="text-sm text-oslo-muted">
+                  {bydelFilter
+                    ? `Ingen polls i ${formatBydelLabel(bydelFilter)} ennå.`
+                    : "Ingen polls ennå — opprett den første!"}
+                </p>
+                {bydelFilter && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setBydelFilter("")}
+                  >
+                    Vis alle bydeler
+                  </Button>
+                )}
               </Card>
             )}
+          </div>
+
+          <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-oslo-border bg-white/95 px-4 py-3 shadow-lg backdrop-blur sm:static sm:mt-6 sm:border sm:rounded-xl sm:shadow-none">
+            <p className="mb-2 text-xs text-oslo-muted">
+              Bekreft at du er et menneske før du stemmer:
+            </p>
+            <TurnstileWidget
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken("")}
+            />
           </div>
         </div>
       )}
 
       {activeTab === "feedback" && (
         <div id="feedback-panel" role="tabpanel" aria-labelledby="feedback-tab" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredPoliticians.map((politician, i) => (
+          {filteredPoliticians.length === 0 ? (
+            <Card className="sm:col-span-2 lg:col-span-3">
+              <p className="text-sm text-oslo-muted">
+                {bydelFilter
+                  ? `Ingen politikere knyttet til ${formatBydelLabel(bydelFilter)}.`
+                  : "Ingen politikere funnet."}
+              </p>
+              {bydelFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-3"
+                  onClick={() => setBydelFilter("")}
+                >
+                  Vis alle bydeler
+                </Button>
+              )}
+            </Card>
+          ) : (
+            filteredPoliticians.map((politician, i) => (
             <Card
               key={politician.id}
               accent={`border-t-4 ${POLL_TOP_ACCENTS[i % POLL_TOP_ACCENTS.length]}`}
@@ -181,7 +218,8 @@ export function PolitikkPageClient({
                 Gi tilbakemelding
               </Button>
             </Card>
-          ))}
+          ))
+          )}
         </div>
       )}
 
@@ -251,6 +289,11 @@ function PollCard({
   const [error, setError] = useState("");
 
   const handleVote = async (optionId: string) => {
+    if (Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY) && !turnstileToken) {
+      setError("Bekreft at du er et menneske nederst på siden før du stemmer.");
+      return;
+    }
+
     setVoting(optionId);
     setError("");
 

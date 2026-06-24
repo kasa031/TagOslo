@@ -53,7 +53,7 @@ function buildCondition(
     sunElevation,
     temperature,
     precipitation,
-    isSunnyNow: level === "sol" || level === "delvis",
+    isSunnyNow: level === "sol",
     checkedAt: checkedAt.toISOString(),
     forecastTime,
     source,

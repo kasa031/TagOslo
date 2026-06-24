@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { BydelSelect } from "@/components/ui/BydelSelect";
+import { Modal } from "@/components/ui/Modal";
+import { Badge } from "@/components/ui/Badge";
 import { TurnstileWidget } from "@/components/ui/TurnstileWidget";
 
 const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
@@ -74,14 +76,8 @@ export function CreatePollModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="create-poll-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-      >
-        <div className="mb-4 flex items-center justify-between">
+    <Modal onClose={onClose} labelledBy="create-poll-title">
+      <div className="mb-4 flex items-center justify-between">
           <h2 id="create-poll-title" className="text-lg font-semibold">
             Opprett poll
           </h2>
@@ -146,28 +142,36 @@ export function CreatePollModal({
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="poll-politicians" className="text-sm font-medium">
-              Tag politikere (valgfritt)
-            </label>
-            <select
-              id="poll-politicians"
-              multiple
-              value={selectedPoliticians}
-              onChange={(e) =>
-                setSelectedPoliticians(
-                  Array.from(e.target.selectedOptions, (opt) => opt.value),
-                )
-              }
-              className="min-h-24 rounded-lg border border-oslo-border px-3 py-2 text-sm"
-            >
-              {politicians.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} {p.party ? `(${p.party})` : ""}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-oslo-muted">Hold Ctrl/Cmd for å velge flere.</p>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-medium">Tag politikere (valgfritt)</span>
+            <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg border border-oslo-border p-2">
+              {politicians.map((p, i) => {
+                const selected = selectedPoliticians.includes(p.id);
+                return (
+                  <label
+                    key={p.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-oslo-blue-light"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => {
+                        setSelectedPoliticians((prev) =>
+                          selected ? prev.filter((id) => id !== p.id) : [...prev, p.id],
+                        );
+                      }}
+                      className="rounded border-oslo-border"
+                    />
+                    <span className="text-sm text-oslo-ink">{p.name}</span>
+                    {p.party && (
+                      <Badge variant="summer" colorIndex={i} className="text-[10px]">
+                        {p.party}
+                      </Badge>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           <Input
@@ -196,7 +200,6 @@ export function CreatePollModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

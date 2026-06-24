@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Loader2, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { MapboxSetupNotice } from "@/components/map/MapboxSetupNotice";
+import { useMapboxToken } from "@/hooks/useMapboxToken";
 import { cn } from "@/lib/utils";
 
 export type AddressHit = {
@@ -24,8 +25,6 @@ type AddressSearchProps = {
   minLength?: number;
 };
 
-const mapboxConfigured = Boolean(process.env.NEXT_PUBLIC_MAPBOX_TOKEN);
-
 export function AddressSearch({
   value,
   onChange,
@@ -36,6 +35,8 @@ export function AddressSearch({
   inputClassName,
   minLength = 2,
 }: AddressSearchProps) {
+  const { token: mapboxToken, loading: mapboxLoading } = useMapboxToken();
+  const mapboxConfigured = Boolean(mapboxToken);
   const listId = useId();
   const [results, setResults] = useState<AddressHit[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,7 +107,7 @@ export function AddressSearch({
         setLoading(false);
       }
     },
-    [minLength, pickResult],
+    [minLength, mapboxConfigured, pickResult],
   );
 
   useEffect(() => {
@@ -167,7 +168,7 @@ export function AddressSearch({
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      {!mapboxConfigured && (
+      {!mapboxLoading && !mapboxConfigured && (
         <MapboxSetupNotice variant="compact" className="mb-3" />
       )}
 

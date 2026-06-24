@@ -6,7 +6,7 @@ import { SunConditionBadge } from "@/components/map/SunConditionBadge";
 import { StatPill } from "@/components/ui/StatPill";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { cn, formatDate, toLocalDatetimeInput } from "@/lib/utils";
 
 type SolPanelProps = {
   oslo: SunCondition | null;
@@ -14,23 +14,28 @@ type SolPanelProps = {
   totalChecked: number;
   checkedAt: string | null;
   loading: boolean;
+  error: string | null;
   solNowOnly: boolean;
   checkTime: string;
   onToggleSolNow: () => void;
   onRefresh: () => void;
   onCheckTimeChange: (value: string) => void;
+  onClearError?: () => void;
 };
 
 export function SolPanel({
   oslo,
   sunnyCount,
   totalChecked,
+  checkedAt,
   loading,
+  error,
   solNowOnly,
   checkTime,
   onToggleSolNow,
   onRefresh,
   onCheckTimeChange,
+  onClearError,
 }: SolPanelProps) {
   const temp =
     oslo?.temperature !== null && oslo?.temperature !== undefined
@@ -50,7 +55,7 @@ export function SolPanel({
             size="sm"
             onClick={onRefresh}
             disabled={loading}
-            aria-label="Oppdater"
+            aria-label="Oppdater sol"
             className="text-white hover:bg-white/15"
           >
             <RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} />
@@ -77,13 +82,40 @@ export function SolPanel({
       </div>
 
       <div className="p-5">
+        {error && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 border-oslo-red/30 bg-oslo-red-light px-3 py-2 text-sm text-oslo-red">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => {
+                onClearError?.();
+                onRefresh();
+              }}
+              className="font-bold underline"
+            >
+              Prøv igjen
+            </button>
+          </div>
+        )}
+
         {oslo && (
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <SunConditionBadge level={oslo.level} label={oslo.label} />
             <span className="text-xs text-oslo-muted">
-              {sunnyCount}/{totalChecked} med sol
+              {sunnyCount}/{totalChecked} med sol nå
             </span>
+            {checkedAt && (
+              <span className="text-xs text-oslo-muted">
+                · Oppdatert {formatDate(checkedAt)}
+              </span>
+            )}
           </div>
+        )}
+
+        {!oslo && !loading && !error && totalChecked === 0 && (
+          <p className="mb-4 text-sm text-oslo-muted">
+            Ingen steder å sjekke sol for — juster filtre eller legg til steder.
+          </p>
         )}
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -91,13 +123,22 @@ export function SolPanel({
             <label htmlFor="sol-check-time" className="text-sm font-medium text-oslo-ink">
               Tidspunkt
             </label>
-            <input
-              id="sol-check-time"
-              type="datetime-local"
-              value={checkTime}
-              onChange={(e) => onCheckTimeChange(e.target.value)}
-              className="rounded-xl border-2 border-oslo-border bg-white px-3 py-2.5 text-sm"
-            />
+            <div className="flex gap-2">
+              <input
+                id="sol-check-time"
+                type="datetime-local"
+                value={checkTime}
+                onChange={(e) => onCheckTimeChange(e.target.value)}
+                className="min-w-0 flex-1 rounded-xl border-2 border-oslo-border bg-white px-3 py-2.5 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => onCheckTimeChange(toLocalDatetimeInput(new Date()))}
+                className="shrink-0 rounded-xl border-2 border-oslo-border bg-white px-3 py-2.5 text-sm font-medium text-oslo-ink hover:bg-oslo-blue-light"
+              >
+                Nå
+              </button>
+            </div>
           </div>
           <div className="flex items-end">
             <button

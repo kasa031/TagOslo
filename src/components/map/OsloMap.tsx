@@ -6,6 +6,7 @@ import type { MapRef } from "react-map-gl/mapbox";
 import type { MapPinSummary } from "@/types";
 import type { SunCondition } from "@/types/sol";
 import { OSLO_CENTER } from "@/lib/constants";
+import { useMapboxToken } from "@/hooks/useMapboxToken";
 import { MapboxSetupNotice } from "@/components/map/MapboxSetupNotice";
 
 type OsloMapProps = {
@@ -15,6 +16,7 @@ type OsloMapProps = {
   flyTo: { lat: number; lng: number } | null;
   onPinSelect: (pin: MapPinSummary) => void;
   onMapClick: (lat: number, lng: number) => void;
+  addPinMode?: boolean;
 };
 
 const categoryColors: Record<string, string> = {
@@ -32,9 +34,10 @@ export function OsloMap({
   flyTo,
   onPinSelect,
   onMapClick,
+  addPinMode = false,
 }: OsloMapProps) {
   const mapRef = useRef<MapRef>(null);
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  const { token, loading } = useMapboxToken();
 
   useEffect(() => {
     if (flyTo && mapRef.current) {
@@ -46,12 +49,25 @@ export function OsloMap({
     }
   }, [flyTo]);
 
+  if (loading) {
+    return (
+      <div className="flex h-[60vh] min-h-[400px] items-center justify-center rounded-2xl border border-oslo-border bg-oslo-blue-light">
+        <p className="text-sm text-oslo-muted">Laster kart …</p>
+      </div>
+    );
+  }
+
   if (!token) {
     return <MapboxSetupNotice />;
   }
 
   return (
-    <div className="h-[60vh] min-h-[400px] overflow-hidden rounded-2xl border border-oslo-border shadow-sm">
+    <div className="relative h-[60vh] min-h-[400px] overflow-hidden rounded-2xl border border-oslo-border shadow-sm">
+      {addPinMode && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-oslo-blue/90 px-3 py-2 text-center text-xs font-bold text-white">
+          Trykk på kartet for å plassere nytt sted
+        </div>
+      )}
       <Map
         ref={mapRef}
         mapboxAccessToken={token}
@@ -62,8 +78,9 @@ export function OsloMap({
         }}
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/light-v11"
+        cursor={addPinMode ? "crosshair" : undefined}
         onClick={(event) => {
-          onMapClick(event.lngLat.lat, event.lngLat.lng);
+          if (addPinMode) onMapClick(event.lngLat.lat, event.lngLat.lng);
         }}
       >
         <NavigationControl position="top-right" />

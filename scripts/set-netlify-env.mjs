@@ -37,9 +37,9 @@ for (const [key, value] of Object.entries(vars)) {
   if (!value) continue;
   if (skipEmpty.has(key)) continue;
 
-  execFileSync(
+    execFileSync(
     process.platform === "win32" ? "npx.cmd" : "npx",
-    ["netlify", "env:set", key, value, "--context", "production"],
+    ["netlify", "env:set", key, value, "--context", "production", "--context", "deploy-preview", "--context", "branch-deploy"],
     { stdio: "inherit", shell: process.platform === "win32" },
   );
   set.push(key);

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { Input } from "@/components/ui/Input";
 import { BydelSelect } from "@/components/ui/BydelSelect";
+import { Modal } from "@/components/ui/Modal";
 import { TurnstileWidget } from "@/components/ui/TurnstileWidget";
 
 const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
@@ -76,14 +77,8 @@ export function FeedbackModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="feedback-title"
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
-      >
-        <div className="mb-4 flex items-center justify-between">
+    <Modal onClose={onClose} labelledBy="feedback-title">
+      <div className="mb-4 flex items-center justify-between">
           <h2 id="feedback-title" className="text-lg font-semibold">
             Gi tilbakemelding
           </h2>
@@ -93,9 +88,14 @@ export function FeedbackModal({
         </div>
 
         {success ? (
-          <p className="rounded-lg bg-oslo-blue-light px-4 py-6 text-center text-sm text-oslo-blue">
-            Takk — vi leser tilbakemeldingen.
-          </p>
+          <div className="space-y-4">
+            <p className="rounded-lg bg-oslo-blue-light px-4 py-6 text-center text-sm text-oslo-blue">
+              Takk — vi leser tilbakemeldingen din.
+            </p>
+            <Button type="button" className="w-full" onClick={onClose}>
+              Lukk
+            </Button>
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col gap-1.5">
@@ -189,7 +189,6 @@ export function FeedbackModal({
             </div>
           </form>
         )}
-      </div>
-    </div>
+    </Modal>
   );
 }

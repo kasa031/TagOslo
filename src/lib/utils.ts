@@ -36,3 +36,15 @@ export function parseHashtags(input: string): string[] {
 export function isWithinOslo(lat: number, lng: number): boolean {
   return lat >= 59.8 && lat <= 60.05 && lng >= 10.6 && lng <= 10.95;
 }
+
+/** Verdi for `<input type="datetime-local">` i brukerens tidssone. */
+export function toLocalDatetimeInput(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/** Normaliser hashtag fra URL eller brukerinput til `#tag`-format. */
+export function normalizeHashtag(raw: string): string {
+  const tag = raw.trim().replace(/^#/, "").toLowerCase();
+  return tag ? `#${tag}` : "";
+}

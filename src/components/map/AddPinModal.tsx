@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type { MapPinSummary } from "@/types";
 import { PLACE_CATEGORIES, POPULAR_HASHTAGS, TERRACE_FACING } from "@/lib/constants";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { AddressSearch } from "@/components/map/AddressSearch";
 import { BydelSelect } from "@/components/ui/BydelSelect";
+import { Modal } from "@/components/ui/Modal";
 import { TurnstileWidget } from "@/components/ui/TurnstileWidget";
 
 const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
@@ -20,11 +21,22 @@ type AddPinModalProps = {
   onSuccess: (pin: MapPinSummary) => void;
 };
 
+async function fetchBydelForCoordinates(lat: number, lng: number) {
+  const response = await fetch(`/api/geocode/bydel?lat=${lat}&lng=${lng}`);
+  if (!response.ok) return null;
+  return response.json() as Promise<{
+    bydelId: string;
+    displayName: string;
+  } | null>;
+}
+
 export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [bydel, setBydel] = useState("GRUNERLOKKA");
+  const [bydelDisplayName, setBydelDisplayName] = useState<string | null>(null);
+  const [bydelAuto, setBydelAuto] = useState(true);
   const [category, setCategory] = useState("ANNET");
   const [terraceFacing, setTerraceFacing] = useState("");
   const [hashtagInput, setHashtagInput] = useState("");
@@ -36,10 +48,20 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
   const [error, setError] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
 
+  const syncBydelFromCoordinates = useCallback(async (lat: number, lng: number) => {
+    const result = await fetchBydelForCoordinates(lat, lng);
+    if (result?.bydelId) {
+      setBydel(result.bydelId);
+      setBydelDisplayName(result.displayName);
+      setBydelAuto(true);
+    }
+  }, []);
+
   useEffect(() => {
     if (initialLocation) {
       setLatitude(initialLocation.lat);
       setLongitude(initialLocation.lng);
+      void syncBydelFromCoordinates(initialLocation.lat, initialLocation.lng);
 
       fetch(`/api/geocode/reverse?lat=${initialLocation.lat}&lng=${initialLocation.lng}`)
         .then((res) => res.json())
@@ -48,7 +70,15 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
         })
         .catch(() => undefined);
     }
-  }, [initialLocation]);
+  }, [initialLocation, syncBydelFromCoordinates]);
+
+  useEffect(() => {
+    if (!bydelAuto) return;
+    const timer = setTimeout(() => {
+      void syncBydelFromCoordinates(latitude, longitude);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [latitude, longitude, bydelAuto, syncBydelFromCoordinates]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -102,14 +132,8 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="add-pin-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-      >
-        <div className="mb-4 flex items-center justify-between">
+    <Modal onClose={onClose} labelledBy="add-pin-title">
+      <div className="mb-4 flex items-center justify-between">
           <h2 id="add-pin-title" className="text-lg font-semibold">
             Legg til sted
           </h2>
@@ -147,12 +171,34 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
               setAddress(hit.address);
               setLatitude(hit.latitude);
               setLongitude(hit.longitude);
+              setBydelAuto(true);
             }}
             placeholder="Gateadresse"
           />
 
+          <p className="rounded-lg bg-oslo-blue-light px-3 py-2 text-xs text-oslo-muted">
+            {initialLocation
+              ? "Plassering valgt på kartet — juster adresse om nødvendig."
+              : "Tips: Bruk «Plasser på kart» for å velge nøyaktig punkt."}
+          </p>
+
           <div className="grid gap-4 sm:grid-cols-2">
-            <BydelSelect value={bydel} onChange={(e) => setBydel(e.target.value)} />
+            <div>
+              <BydelSelect
+                value={bydel}
+                onChange={(e) => {
+                  setBydel(e.target.value);
+                  setBydelAuto(false);
+                  setBydelDisplayName(null);
+                }}
+              />
+              {bydelAuto && bydelDisplayName && (
+                <p className="mt-1 text-xs text-oslo-muted">
+                  Satt automatisk fra kartet
+                  {bydelDisplayName === "Sentrum" ? " (Sentrum)" : ""}
+                </p>
+              )}
+            </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="pin-category" className="text-sm font-medium">
                 Kategori
@@ -230,24 +276,35 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
             placeholder="Valgfritt kallenavn"
           />
 
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Breddegrad"
-              type="number"
-              step="any"
-              value={latitude}
-              onChange={(e) => setLatitude(parseFloat(e.target.value))}
-              required
-            />
-            <Input
-              label="Lengdegrad"
-              type="number"
-              step="any"
-              value={longitude}
-              onChange={(e) => setLongitude(parseFloat(e.target.value))}
-              required
-            />
-          </div>
+          <details className="rounded-lg border border-oslo-border px-3 py-2">
+            <summary className="cursor-pointer text-sm font-medium text-oslo-ink">
+              Avansert (koordinater)
+            </summary>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Input
+                label="Breddegrad"
+                type="number"
+                step="any"
+                value={latitude}
+                onChange={(e) => {
+                  setLatitude(parseFloat(e.target.value));
+                  setBydelAuto(true);
+                }}
+                required
+              />
+              <Input
+                label="Lengdegrad"
+                type="number"
+                step="any"
+                value={longitude}
+                onChange={(e) => {
+                  setLongitude(parseFloat(e.target.value));
+                  setBydelAuto(true);
+                }}
+                required
+              />
+            </div>
+          </details>
 
           {error && (
             <p className="rounded-lg bg-oslo-red-light px-3 py-2 text-sm text-oslo-red">
@@ -271,7 +328,6 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -10,7 +10,9 @@
     "db:generate": "prisma generate",
     "db:push": "dotenv -e .env.local -- prisma db push",
     "db:seed": "dotenv -e .env.local -- npx tsx prisma/seed.ts",
-    "db:studio": "dotenv -e .env.local -- prisma studio"
+    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "bydeler:build": "node scripts/convert-bydel-topojson.mjs",
+    "bydeler:verify": "node scripts/verify-seed-bydeler.mjs"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

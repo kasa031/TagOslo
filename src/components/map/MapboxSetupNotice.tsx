@@ -1,4 +1,4 @@
-import { Map } from "lucide-react";
+import { Map, List } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type MapboxSetupNoticeProps = {
@@ -15,7 +15,10 @@ export function MapboxSetupNotice({ variant = "full", className }: MapboxSetupNo
           className,
         )}
       >
-        <p className="font-medium text-oslo-blue">Kartet er ikke tilgjengelig</p>
+        <p className="font-medium text-oslo-blue">Adressesøk krever kart</p>
+        <p className="mt-1 text-xs text-oslo-muted">
+          Du kan fortsatt bla i sted-listen nedenfor.
+        </p>
       </div>
     );
   }
@@ -28,8 +31,15 @@ export function MapboxSetupNotice({ variant = "full", className }: MapboxSetupNo
       )}
     >
       <Map className="mb-3 h-10 w-10 text-oslo-blue" aria-hidden />
-      <p className="font-medium text-oslo-blue">Kartet er ikke tilgjengelig</p>
-      <p className="mt-2 max-w-sm text-sm text-oslo-muted">Prøv igjen senere.</p>
+      <p className="font-medium text-oslo-blue">Kartet er ikke tilgjengelig akkurat nå</p>
+      <p className="mt-2 max-w-sm text-sm text-oslo-muted">
+        Interaktivt kart vises når tjenesten er konfigurert. Du kan fortsatt søke og lese steder i
+        listen.
+      </p>
+      <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-oslo-blue">
+        <List className="h-4 w-4" aria-hidden />
+        Scroll ned til «Steder i utvalget»
+      </p>
     </div>
   );
 }
