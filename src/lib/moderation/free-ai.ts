@@ -1,61 +1,21 @@
 /**
- * Gratis AI-moderering (valgfritt).
- * - Google Perspective API: gratis nøkkel, god på toxicity
- * - Hugging Face Inference: gratis tier med token
- *
- * Uten nøkkel brukes kun regelbasert filter.
+ * Gratis AI-moderering via Hugging Face Inference API.
+ * Uten HUGGINGFACE_API_TOKEN brukes kun regelbasert filter.
  */
 
-const PERSPECTIVE_TOXICITY_THRESHOLD = 0.82;
 const HF_TOXIC_THRESHOLD = 0.75;
 
-export type FreeAiProvider = "none" | "perspective" | "huggingface";
+export type FreeAiProvider = "none" | "huggingface";
 
 export function getFreeAiProvider(): FreeAiProvider {
   const explicit = process.env.MODERATION_AI?.toLowerCase();
   if (explicit === "none") return "none";
-  if (explicit === "perspective" && process.env.PERSPECTIVE_API_KEY) return "perspective";
-  if (explicit === "huggingface" && process.env.HUGGINGFACE_API_TOKEN) return "huggingface";
-
-  if (process.env.PERSPECTIVE_API_KEY) return "perspective";
   if (process.env.HUGGINGFACE_API_TOKEN) return "huggingface";
   return "none";
 }
 
 export function isFreeAiModerationConfigured(): boolean {
-  return getFreeAiProvider() !== "none";
-}
-
-async function checkPerspective(text: string): Promise<boolean> {
-  const key = process.env.PERSPECTIVE_API_KEY;
-  if (!key) return true;
-
-  const response = await fetch(
-    `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        comment: { text },
-        languages: ["no", "nb", "en"],
-        requestedAttributes: { TOXICITY: {}, INSULT: {}, THREAT: {} },
-      }),
-    },
-  );
-
-  if (!response.ok) return true;
-
-  const data = (await response.json()) as {
-    attributeScores?: Record<string, { summaryScore?: { value?: number } }>;
-  };
-
-  const scores = [
-    data.attributeScores?.TOXICITY?.summaryScore?.value ?? 0,
-    data.attributeScores?.INSULT?.summaryScore?.value ?? 0,
-    data.attributeScores?.THREAT?.summaryScore?.value ?? 0,
-  ];
-
-  return Math.max(...scores) < PERSPECTIVE_TOXICITY_THRESHOLD;
+  return getFreeAiProvider() === "huggingface";
 }
 
 async function checkHuggingFace(text: string): Promise<boolean> {
@@ -100,11 +60,9 @@ async function checkHuggingFace(text: string): Promise<boolean> {
 
 /** Returnerer true hvis teksten er OK etter gratis AI-sjekk (eller hvis AI er av). */
 export async function passesFreeAiCheck(text: string): Promise<boolean> {
-  const provider = getFreeAiProvider();
-  if (provider === "none") return true;
+  if (getFreeAiProvider() === "none") return true;
 
   try {
-    if (provider === "perspective") return await checkPerspective(text);
     return await checkHuggingFace(text);
   } catch {
     return true;

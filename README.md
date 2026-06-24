@@ -20,7 +20,7 @@ Bygget for **0 kr/mnd** (kun domene koster penger).
 - **Kart** – Mapbox, hashtags (#lokalhistorie, #solservering), bydeler og kategorier
 - **Solforhold** – Sanntid fra Yr/MET + solposisjon
 - **Politikk** – Tilbakemeldinger, polls og bydelsfilter
-- **Moderering** – Regelbasert (gratis), valgfritt OpenAI Moderation
+- **Moderering** – Regelbasert (gratis), valgfritt Hugging Face Inference
 
 ## 0-kroners stack
 

@@ -60,9 +60,11 @@ MET_USER_AGENT="TagOslo/1.0 ms.tery@icloud.com"
 NEXT_PUBLIC_APP_URL="https://tagoslo.no"
 ```
 
-## Moderering uten OpenAI
+## Moderering (gratis)
 
-Appen bruker **regelbasert moderering** som standard (0 kr). OpenAI Moderation er valgfritt og også gratis hvis du legger inn nøkkel – men **ikke nødvendig**.
+Appen bruker **regelbasert moderering** som standard (0 kr): banneord, kontaktinfo og lenker.
+
+Valgfritt: **Hugging Face Inference** med gratis Read-token (`HUGGINGFACE_API_TOKEN` i Netlify). Bilder sjekkes manuelt i `/admin`.
 
 ## Trafikk innenfor gratis
 
