@@ -8,6 +8,8 @@ import {
 import { isFreeAiModerationConfigured, getFreeAiProvider } from "@/lib/moderation";
 import { CONTACT_EMAIL } from "@/lib/contact";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const checks = {
     database: isDatabaseConfigured(),
