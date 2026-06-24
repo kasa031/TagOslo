@@ -2,25 +2,21 @@
 @import "mapbox-gl/dist/mapbox-gl.css";
 
 @theme {
-  --color-oslo-blue: #004f9f;
-  --color-oslo-blue-dark: #003366;
-  --color-oslo-blue-light: #e8f4ff;
-  --color-oslo-red: #c8102e;
-  --color-oslo-red-light: #ffe8ec;
+  --color-oslo-blue: #103d91;
+  --color-oslo-blue-dark: #0a2d6b;
+  --color-oslo-blue-light: #e8f0fa;
+  --color-oslo-red: #c82521;
+  --color-oslo-red-light: #fce8e8;
+  --color-oslo-silver: #d1d3d4;
+  --color-oslo-cream: #fff1bd;
   --color-oslo-sand: #fffdf8;
   --color-oslo-ink: #0f172a;
   --color-oslo-muted: #475569;
   --color-oslo-border: #cbd5e1;
 
-  --color-summer-coral: #ff5c7a;
-  --color-summer-turquoise: #00c9c8;
   --color-summer-sun: #ffd500;
-  --color-summer-lime: #9ae600;
-  --color-summer-orange: #ff8c00;
-  --color-summer-magenta: #ff3d9a;
-  --color-summer-sky: #e0f7ff;
-  --color-summer-cream: #fffbeb;
-  --color-summer-mint: #e8fff4;
+  --color-summer-sky: #e8f0fa;
+  --color-summer-cream: #fff1bd;
   --color-pool-sky: #7acdee;
   --color-pool-deep: #0693e3;
   --color-soft-mist: #f0faff;

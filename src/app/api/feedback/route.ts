@@ -5,11 +5,15 @@ import { moderateContent } from "@/lib/moderation";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { checkRateLimit, getClientKey } from "@/lib/rate-limit";
 
+import { BYDELER } from "@/lib/constants";
+
+const bydelIds = ["HELE_OSLO", ...BYDELER.map((b) => b.id)] as const;
+
 const feedbackSchema = z.object({
   politicianId: z.string(),
   rating: z.number().int().min(1).max(5),
   comment: z.string().min(10).max(2000),
-  bydel: z.string(),
+  bydel: z.enum(bydelIds),
   authorAlias: z.string().max(40).optional(),
   turnstileToken: z.string().optional(),
 });

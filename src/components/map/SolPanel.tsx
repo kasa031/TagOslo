@@ -38,11 +38,11 @@ export function SolPanel({
       : "—";
 
   return (
-    <Card className="overflow-hidden border-pool-sky bg-summer-sky p-0">
+    <Card className="overflow-hidden border-pool-sky bg-oslo-blue-light p-0">
       <div className="border-b-2 border-pool-sky/50 bg-gradient-to-r from-pool-deep to-oslo-blue px-5 py-4 text-white">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Sun className="h-5 w-5 text-summer-sun" />
+            <Sun className="h-5 w-5 text-oslo-blue" />
             <h2 className="font-display text-lg font-bold">Sol</h2>
           </div>
           <Button
@@ -69,7 +69,7 @@ export function SolPanel({
             <StatPill
               label="Status"
               value={oslo.label}
-              className="bg-summer-sun text-oslo-ink"
+              className="bg-oslo-cream text-oslo-ink"
               valueClassName="text-sm sm:text-base"
             />
           </div>
@@ -106,7 +106,7 @@ export function SolPanel({
               className={cn(
                 "w-full rounded-xl border-2 px-4 py-2.5 text-sm font-bold transition",
                 solNowOnly
-                  ? "border-summer-sun bg-summer-sun text-oslo-ink"
+                  ? "border-oslo-blue bg-oslo-blue text-white"
                   : "border-oslo-border bg-white text-oslo-ink hover:bg-pool-sky/20",
               )}
             >

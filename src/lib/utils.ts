@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatBydelLabel(bydel: string): string {
+  if (bydel === "HELE_OSLO") return "Hele Oslo";
   return bydel
     .replace(/_/g, " ")
     .replace("GRUNERLOKKA", "Grünerløkka")

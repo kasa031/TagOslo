@@ -210,7 +210,7 @@ export function AddressSearch({
                 className={cn(
                   "flex w-full items-start gap-2 px-3 py-2.5 text-left text-sm transition",
                   index === activeIndex
-                    ? "bg-summer-sky text-oslo-ink"
+                    ? "bg-oslo-blue-light text-oslo-ink"
                     : "hover:bg-oslo-blue-light",
                 )}
                 onMouseEnter={() => setActiveIndex(index)}

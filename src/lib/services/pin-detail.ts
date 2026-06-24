@@ -1,6 +1,5 @@
 import type { PinDetail, PinReviewItem } from "@/types/pin-detail";
 import type { PinContentItem } from "@/types";
-import { DEMO_PIN_DETAILS, DEMO_PINS } from "@/lib/demo-data";
 import { prisma } from "@/lib/db";
 
 function mapContent(content: {
@@ -39,15 +38,7 @@ function mapReview(review: {
 
 export async function getPinDetail(id: string): Promise<PinDetail | null> {
   if (!process.env.DATABASE_URL) {
-    if (DEMO_PIN_DETAILS[id]) return DEMO_PIN_DETAILS[id];
-    const summary = DEMO_PINS.find((p) => p.id === id);
-    if (!summary) return null;
-    return {
-      ...summary,
-      terraceFacing: null,
-      contents: [],
-      reviews: [],
-    };
+    return null;
   }
 
   try {
@@ -91,7 +82,7 @@ export async function getPinDetail(id: string): Promise<PinDetail | null> {
       reviews: pin.reviews.map(mapReview),
     };
   } catch {
-    return DEMO_PIN_DETAILS[id] ?? null;
+    return null;
   }
 }
 
@@ -106,17 +97,7 @@ export async function addPinContent(data: {
   const pending = !data.autoApprove;
 
   if (!process.env.DATABASE_URL) {
-    return {
-      content: {
-        id: `demo-content-${Date.now()}`,
-        type: data.type,
-        textContent: data.textContent ?? null,
-        mediaUrl: data.mediaUrl ?? null,
-        authorAlias: data.authorAlias ?? null,
-        createdAt: new Date().toISOString(),
-      },
-      pending: false,
-    };
+    return null;
   }
 
   const content = await prisma.pinContent.create({
@@ -141,16 +122,7 @@ export async function addPinReview(data: {
   autoApprove?: boolean;
 }): Promise<{ review: PinReviewItem; pending: boolean } | null> {
   if (!process.env.DATABASE_URL) {
-    return {
-      review: {
-        id: `demo-review-${Date.now()}`,
-        rating: data.rating,
-        comment: data.comment ?? null,
-        authorAlias: data.authorAlias ?? null,
-        createdAt: new Date().toISOString(),
-      },
-      pending: false,
-    };
+    return null;
   }
 
   const review = await prisma.placeReview.create({

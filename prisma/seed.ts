@@ -1,20 +1,7 @@
 import { PrismaClient, type Bydel, type PlaceCategory } from "@prisma/client";
+import { OSLO_POLITICIANS, OSLO_POLITICIAN_IDS } from "../src/lib/oslo-politicians";
 
 const prisma = new PrismaClient();
-
-const politicians = [
-  { id: "anne-beate-hjerno", name: "Anne Beate Hjernø", party: "Arbeiderpartiet", role: "Byråd for byutvikling" },
-  { id: "eirik-lae-solberg", name: "Eirik Lae Solberg", party: "Høyre", role: "Byrådsleder" },
-  { id: "rasmus-reinvang", name: "Rasmus Reinvang", party: "MDG", role: "Byråd for miljø og transport" },
-  { id: "inger-lise-hansen", name: "Inger Lise Hansen", party: "SV", role: "Byråd for eldre, helse og frivillighet" },
-  { id: "aud-kvalbein", name: "Aud Kvalbein", party: "KrF", role: "Byråd for næring og eierskap" },
-  { id: "kamzy-gunaratnam", name: "Kamzy Gunaratnam", party: "Arbeiderpartiet", role: "Varaordfører" },
-  { id: "shaista-aziz", name: "Shaista Aziz", party: "SV", role: "Bystyremedlem" },
-  { id: "sylvi-listhaug", name: "Sylvi Listhaug", party: "Fremskrittspartiet", role: "Bystyremedlem" },
-  { id: "lan-marie-berg", name: "Lan Marie Berg", party: "MDG", role: "Bystyremedlem" },
-  { id: "carl-i-hagen", name: "Carl I. Hagen", party: "Fremskrittspartiet", role: "Bystyremedlem" },
-  { id: "marianne-marthinsen", name: "Marianne Marthinsen", party: "Arbeiderpartiet", role: "Bystyremedlem" },
-];
 
 type SeedPin = {
   id: string;
@@ -320,19 +307,30 @@ const launchPins: SeedPin[] = [
 ];
 
 async function seedPoliticians() {
-  for (const politician of politicians) {
+  for (const politician of OSLO_POLITICIANS) {
     await prisma.politician.upsert({
       where: { id: politician.id },
       update: {
         name: politician.name,
         party: politician.party,
         role: politician.role,
+        bydel: null,
         active: true,
       },
-      create: politician,
+      create: {
+        ...politician,
+        bydel: null,
+        active: true,
+      },
     });
   }
-  console.log(`✓ ${politicians.length} politikere`);
+
+  await prisma.politician.updateMany({
+    where: { id: { notIn: OSLO_POLITICIAN_IDS } },
+    data: { active: false },
+  });
+
+  console.log(`✓ ${OSLO_POLITICIANS.length} aktive politikere`);
 }
 
 async function seedMapPins() {
@@ -439,7 +437,7 @@ async function seedStarterPoll() {
         ],
       },
       politicianTags: {
-        create: [{ politicianId: "rasmus-reinvang" }],
+        create: [{ politicianId: "eirik-lae-solberg" }],
       },
     },
   });

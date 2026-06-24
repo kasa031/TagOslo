@@ -1,12 +1,9 @@
 import type { PoliticianSummary, PollSummary } from "@/types";
-import { DEMO_POLITICIANS, DEMO_POLLS } from "@/lib/demo-data";
 import { prisma } from "@/lib/db";
 
 export async function getPoliticians(bydel?: string): Promise<PoliticianSummary[]> {
   if (!process.env.DATABASE_URL) {
-    return bydel
-      ? DEMO_POLITICIANS.filter((p) => p.bydel === bydel || p.bydel === null)
-      : DEMO_POLITICIANS;
+    return [];
   }
 
   try {
@@ -37,7 +34,7 @@ export async function getPoliticians(bydel?: string): Promise<PoliticianSummary[
       };
     });
   } catch {
-    return DEMO_POLITICIANS;
+    return [];
   }
 }
 
@@ -80,7 +77,7 @@ function formatPoll(
 
 export async function getPolls(bydel?: string): Promise<PollSummary[]> {
   if (!process.env.DATABASE_URL) {
-    return bydel ? DEMO_POLLS.filter((p) => p.bydel === bydel) : DEMO_POLLS;
+    return [];
   }
 
   try {
@@ -95,7 +92,7 @@ export async function getPolls(bydel?: string): Promise<PollSummary[]> {
 
     return polls.map(formatPoll);
   } catch {
-    return DEMO_POLLS;
+    return [];
   }
 }
 
@@ -108,23 +105,7 @@ export async function createPoll(data: {
   authorAlias?: string;
 }): Promise<PollSummary> {
   if (!process.env.DATABASE_URL) {
-    const totalOptions = data.options.map((label, i) => ({
-      id: `demo-opt-${i}`,
-      label,
-      votes: 0,
-      percentage: 0,
-    }));
-
-    return {
-      id: `demo-poll-${Date.now()}`,
-      question: data.question,
-      description: data.description ?? null,
-      bydel: data.bydel as PollSummary["bydel"],
-      createdAt: new Date().toISOString(),
-      totalVotes: 0,
-      options: totalOptions,
-      politicians: [],
-    };
+    throw new Error("Database er ikke tilgjengelig");
   }
 
   const poll = await prisma.poll.create({
@@ -157,26 +138,7 @@ export async function voteOnPoll(
   voterHash: string,
 ): Promise<PollSummary | null> {
   if (!process.env.DATABASE_URL) {
-    const poll = DEMO_POLLS.find((p) => p.id === pollId);
-    if (!poll) return null;
-
-    const updated = { ...poll, totalVotes: poll.totalVotes + 1 };
-    updated.options = poll.options.map((opt) => {
-      if (opt.id === optionId) {
-        const votes = opt.votes + 1;
-        return {
-          ...opt,
-          votes,
-          percentage: Math.round((votes / updated.totalVotes) * 100),
-        };
-      }
-      return {
-        ...opt,
-        percentage: Math.round((opt.votes / updated.totalVotes) * 100),
-      };
-    });
-
-    return updated;
+    return null;
   }
 
   try {

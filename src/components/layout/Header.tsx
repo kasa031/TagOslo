@@ -7,8 +7,8 @@ import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/kart", label: "Kart", activeClass: "bg-summer-turquoise text-white" },
-  { href: "/politikk", label: "Politikk", activeClass: "bg-summer-coral text-white" },
+  { href: "/kart", label: "Kart", activeClass: "bg-oslo-blue text-white" },
+  { href: "/politikk", label: "Politikk", activeClass: "bg-oslo-red text-white" },
 ];
 
 export function Header() {
@@ -43,7 +43,7 @@ export function Header() {
                   "rounded-xl px-3 py-2 text-sm font-bold transition",
                   active
                     ? item.activeClass
-                    : "text-oslo-ink hover:bg-summer-sky hover:text-oslo-blue",
+                    : "text-oslo-ink hover:bg-oslo-blue-light hover:text-oslo-blue",
                 )}
               >
                 {item.label}

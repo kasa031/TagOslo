@@ -11,7 +11,7 @@ const variants = {
     "border-2 border-oslo-blue bg-white text-oslo-blue hover:bg-oslo-blue-light",
   ghost: "text-oslo-blue hover:bg-oslo-blue-light",
   danger: "bg-oslo-red text-white hover:opacity-90",
-  summer: "bg-summer-coral text-white hover:bg-summer-magenta",
+  summer: "bg-oslo-blue text-white hover:bg-oslo-blue-dark",
 };
 
 const sizes = {

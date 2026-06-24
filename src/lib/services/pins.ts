@@ -1,5 +1,4 @@
 import type { MapPinSummary } from "@/types";
-import { DEMO_PINS } from "@/lib/demo-data";
 import { prisma } from "@/lib/db";
 
 function toPinSummary(
@@ -41,7 +40,7 @@ function toPinSummary(
 
 export async function getMapPins(bydel?: string): Promise<MapPinSummary[]> {
   if (!process.env.DATABASE_URL) {
-    return bydel ? DEMO_PINS.filter((p) => p.bydel === bydel) : DEMO_PINS;
+    return [];
   }
 
   try {
@@ -56,7 +55,7 @@ export async function getMapPins(bydel?: string): Promise<MapPinSummary[]> {
 
     return pins.map(toPinSummary);
   } catch {
-    return DEMO_PINS;
+    return [];
   }
 }
 
@@ -74,21 +73,7 @@ export async function createMapPin(data: {
   story?: string;
 }): Promise<MapPinSummary> {
   if (!process.env.DATABASE_URL) {
-    const demoPin: MapPinSummary = {
-      id: `demo-${Date.now()}`,
-      title: data.title,
-      description: data.description ?? null,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      address: data.address ?? null,
-      bydel: data.bydel as MapPinSummary["bydel"],
-      category: data.category,
-      hashtags: data.hashtags,
-      contentCount: data.story ? 1 : 0,
-      reviewCount: 0,
-      avgRating: null,
-    };
-    return demoPin;
+    throw new Error("Database er ikke tilgjengelig");
   }
 
   const pin = await prisma.mapPin.create({

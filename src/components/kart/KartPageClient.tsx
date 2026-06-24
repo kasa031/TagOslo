@@ -213,7 +213,7 @@ export function KartPageClient({ initialPins }: { initialPins: MapPinSummary[] }
             inputClassName="pl-3"
           />
           {searchedAddress && searchedSun && (
-            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border-2 border-summer-sun bg-summer-cream px-3 py-2 text-sm">
+            <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border-2 border-oslo-blue bg-oslo-blue-light px-3 py-2 text-sm">
               <MapPin className="h-4 w-4 text-oslo-blue" />
               <span className="font-semibold text-oslo-ink">{searchedAddress.address}</span>
               <SunConditionBadge level={searchedSun.level} label={searchedSun.label} />
@@ -340,7 +340,7 @@ export function KartPageClient({ initialPins }: { initialPins: MapPinSummary[] }
                     <li key={pin.id}>
                       <button
                         type="button"
-                        className="w-full rounded-xl border-2 border-oslo-border p-3 text-left transition hover:border-summer-turquoise hover:bg-summer-sky"
+                        className="w-full rounded-xl border-2 border-oslo-border p-3 text-left transition hover:border-oslo-blue hover:bg-oslo-blue-light"
                         onClick={() => {
                           setSelectedPin(pin);
                           setFlyTo({ lat: pin.latitude, lng: pin.longitude });

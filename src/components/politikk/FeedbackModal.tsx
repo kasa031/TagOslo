@@ -27,7 +27,7 @@ export function FeedbackModal({
   const [politicianId, setPoliticianId] = useState(selectedPolitician?.id ?? "");
   const [rating, setRating] = useState(3);
   const [comment, setComment] = useState("");
-  const [bydel, setBydel] = useState("GRUNERLOKKA");
+  const [bydel, setBydel] = useState("HELE_OSLO");
   const [authorAlias, setAuthorAlias] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -110,7 +110,9 @@ export function FeedbackModal({
                 className="rounded-lg border border-oslo-border px-3 py-2 text-sm"
               >
                 <option value="">Velg politiker</option>
-                {politicians.map((p) => (
+                {[...politicians]
+                  .sort((a, b) => a.name.localeCompare(b.name, "nb"))
+                  .map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name} {p.party ? `(${p.party})` : ""}
                   </option>
@@ -118,7 +120,12 @@ export function FeedbackModal({
               </select>
             </div>
 
-            <BydelSelect value={bydel} onChange={(e) => setBydel(e.target.value)} />
+            <BydelSelect
+              value={bydel}
+              onChange={(e) => setBydel(e.target.value)}
+              showHeleOsloOption
+              label="Bydel (valgfritt for bypolitikere)"
+            />
 
             <div>
               <label className="text-sm font-medium">Vurdering (1–5)</label>

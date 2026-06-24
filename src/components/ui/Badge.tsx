@@ -18,8 +18,8 @@ export function Badge({
 
   const variants = {
     default: "bg-oslo-blue text-white",
-    hashtag: "bg-summer-coral text-white",
-    category: "bg-summer-turquoise text-white",
+    hashtag: "bg-oslo-blue text-white",
+    category: "bg-oslo-red text-white",
     summer: summerClass,
   };
 

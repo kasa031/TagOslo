@@ -3,13 +3,19 @@ import { BYDELER } from "@/lib/constants";
 
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   label?: string;
+  /** Vis «Alle bydeler» (tom verdi) — for filtre */
   showAllOption?: boolean;
+  /** Vis «Hele Oslo» — for tilbakemeldinger til bypolitikere */
+  showHeleOsloOption?: boolean;
+  heleOsloOptionLabel?: string;
 };
 
 export function BydelSelect({
   className,
   label = "Bydel",
   showAllOption = false,
+  showHeleOsloOption = false,
+  heleOsloOptionLabel = "Hele Oslo (ikke bydelspolitiker)",
   id,
   ...props
 }: SelectProps) {
@@ -28,6 +34,7 @@ export function BydelSelect({
         )}
         {...props}
       >
+        {showHeleOsloOption && <option value="HELE_OSLO">{heleOsloOptionLabel}</option>}
         {showAllOption && <option value="">Alle bydeler</option>}
         {BYDELER.map((bydel) => (
           <option key={bydel.id} value={bydel.id}>

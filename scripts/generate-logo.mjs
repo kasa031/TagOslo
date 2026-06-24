@@ -26,18 +26,72 @@ try {
 const fontFamily = "Cinzel, 'Palatino Linotype', 'Book Antiqua', Georgia, serif";
 const fontFileUri = fontPath.replace(/\\/g, "/");
 
-const meta = await sharp(sourcePath).metadata();
-const w = meta.width ?? 2000;
-const h = meta.height ?? 2387;
+/** Finn indre våpen: blått felt + krone, uten ytre tekstring. */
+async function detectInnerEmblemCrop(source) {
+  const { data, info } = await sharp(source).ensureAlpha().raw().toBuffer({
+    resolveWithObject: true,
+  });
+  const w = info.width;
+  const h = info.height;
+  const ch = info.channels;
 
-// Inner blue field — excludes outer motto ring and crown
-const cx = w * 0.5;
-const cy = h * 0.535;
-const radius = w * 0.305;
+  const isBlue = (r, g, b) => b > 90 && b > r * 1.15 && b > g * 0.85 && r < 130;
 
-const cropLeft = Math.round(cx - radius);
-const cropTop = Math.round(cy - radius);
-const cropSize = Math.round(radius * 2);
+  const bluePoints = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * ch;
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      if (isBlue(r, g, b)) bluePoints.push([x, y]);
+    }
+  }
+
+  let sumX = 0;
+  let sumY = 0;
+  for (const [x, y] of bluePoints) {
+    sumX += x;
+    sumY += y;
+  }
+  const blueCx = sumX / bluePoints.length;
+  const blueCy = sumY / bluePoints.length;
+
+  const blueDistances = bluePoints.map(([x, y]) => Math.hypot(x - blueCx, y - blueCy));
+  blueDistances.sort((a, b) => a - b);
+
+  let minX = w;
+  let maxX = 0;
+  let minY = h;
+  let maxY = 0;
+  for (const [x, y] of bluePoints) {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  }
+
+  const leftExtent = blueCx - minX;
+  const rightExtent = maxX - blueCx;
+
+  const cx = blueCx;
+  // ~84 % av blåfeltets bredde — kutte tekstring, beholde våpen
+  const radius = Math.min(leftExtent, rightExtent) * 0.845;
+  const cy = maxY - radius;
+
+  const safeRadius = Math.min(radius, cx - 2, cy - 2, w - cx - 2, h - cy - 2);
+  const cropSize = Math.round(safeRadius * 2);
+  const cropLeft = Math.round(cx - safeRadius);
+  const cropTop = Math.round(cy - safeRadius);
+
+  return { cx, cy, radius: safeRadius, cropLeft, cropTop, cropSize, w, h };
+}
+
+const crop = await detectInnerEmblemCrop(sourcePath);
+const { cropLeft, cropTop, cropSize } = crop;
+console.log(
+  `Emblem crop: center (${crop.cx.toFixed(0)}, ${crop.cy.toFixed(0)}), radius ${crop.radius.toFixed(0)}px`,
+);
 
 const emblemSize = 520;
 const pad = 24;
@@ -49,7 +103,7 @@ const totalHeightRing = emblemSize + pad * 2;
 async function cropRoundEmblem(size) {
   const square = await sharp(sourcePath)
     .extract({ left: cropLeft, top: cropTop, width: cropSize, height: cropSize })
-    .resize(size, size, { fit: "cover" })
+    .resize(size, size, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png()
     .toBuffer();
 
@@ -232,7 +286,7 @@ await sharp({
     width: maskableSize,
     height: maskableSize,
     channels: 4,
-    background: { r: 0, g: 79, b: 159, alpha: 255 },
+    background: { r: 16, g: 61, b: 145, alpha: 255 },
   },
 })
   .composite([

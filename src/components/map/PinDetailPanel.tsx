@@ -121,7 +121,7 @@ export function PinDetailPanel({ pin, sunCondition, onClose }: PinDetailPanelPro
         </div>
 
         {sunCondition && (
-          <div className="mt-4 rounded-xl border-2 border-summer-sun bg-summer-cream p-3 text-sm">
+          <div className="mt-4 rounded-xl border-2 border-oslo-blue bg-oslo-blue-light p-3 text-sm">
             <p className="font-bold text-oslo-ink">Sol</p>
             <ul className="mt-2 space-y-1 text-xs font-medium text-oslo-muted">
               <li>Skydekke: {sunCondition.cloudPercent}%</li>

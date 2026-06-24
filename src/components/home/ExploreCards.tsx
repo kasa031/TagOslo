@@ -8,9 +8,9 @@ const EXPLORE = [
     title: "Kart & sol",
     description: "Sol, adresser og steder i byen.",
     cta: "Åpne kart",
-    bg: "bg-summer-sky",
-    accent: "border-t-summer-turquoise",
-    iconBg: "bg-summer-turquoise text-white",
+    bg: "bg-oslo-blue-light",
+    accent: "border-t-oslo-blue",
+    iconBg: "bg-oslo-blue text-white",
   },
   {
     href: "/kart",
@@ -18,9 +18,9 @@ const EXPLORE = [
     title: "Del & tag",
     description: "Historier, bilder og hashtags.",
     cta: "Tag et sted",
-    bg: "bg-summer-cream",
-    accent: "border-t-summer-sun",
-    iconBg: "bg-summer-sun text-oslo-ink",
+    bg: "bg-oslo-cream/40",
+    accent: "border-t-pool-deep",
+    iconBg: "bg-pool-deep text-white",
   },
   {
     href: "/politikk",
@@ -29,8 +29,8 @@ const EXPLORE = [
     description: "Polls og tilbakemeldinger per bydel.",
     cta: "Se politikk",
     bg: "bg-white",
-    accent: "border-t-summer-coral",
-    iconBg: "bg-summer-coral text-white",
+    accent: "border-t-oslo-red",
+    iconBg: "bg-oslo-red text-white",
   },
 ] as const;
 

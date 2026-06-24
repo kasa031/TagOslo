@@ -89,7 +89,7 @@ export function PolitikkPageClient({
           onClick={() => setActiveTab("polls")}
           className={`flex items-center gap-2 border-b-4 px-4 py-2 text-sm font-bold transition ${
             activeTab === "polls"
-              ? "border-summer-coral text-summer-coral"
+              ? "border-oslo-red text-oslo-red"
               : "border-transparent text-oslo-muted hover:text-oslo-ink"
           }`}
         >
@@ -105,7 +105,7 @@ export function PolitikkPageClient({
           onClick={() => setActiveTab("feedback")}
           className={`flex items-center gap-2 border-b-4 px-4 py-2 text-sm font-bold transition ${
             activeTab === "feedback"
-              ? "border-summer-turquoise text-summer-turquoise"
+              ? "border-oslo-blue text-oslo-blue"
               : "border-transparent text-oslo-muted hover:text-oslo-ink"
           }`}
         >
@@ -308,7 +308,11 @@ function PollCard({
           const barColor = POLL_BAR_COLORS[index % POLL_BAR_COLORS.length];
           const borderColor = POLL_BORDER_COLORS[index % POLL_BORDER_COLORS.length];
           const isVoting = voting === option.id;
-          const lightBar = barColor === "bg-summer-sun" || barColor === "bg-summer-lime";
+          const lightBar =
+            barColor.includes("light") ||
+            barColor.includes("silver") ||
+            barColor.includes("cream") ||
+            barColor.includes("sky");
           const badgeClass = lightBar ? `${barColor} text-oslo-ink` : `${barColor} text-white`;
 
           return (
