@@ -235,6 +235,9 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-oslo-muted">
+                Lagres for fremtidig bruk — påvirker ikke solvisningen ennå.
+              </p>
             </div>
           )}
 
@@ -263,11 +266,15 @@ export function AddPinModal({ initialLocation, onClose, onSuccess }: AddPinModal
           </div>
 
           <Textarea
-            label="Tips"
+            label="Tips / lokalhistorie (valgfritt)"
             value={story}
             onChange={(e) => setStory(e.target.value)}
             placeholder="Del lokalhistorie, solforhold eller anbefalinger …"
           />
+          <p className="-mt-2 text-xs text-oslo-muted">
+            Stedet vises på kartet med en gang. Tekst her sjekkes manuelt før den blir synlig.
+            Grovt språk stoppes automatisk.
+          </p>
 
           <Input
             label="Kallenavn"

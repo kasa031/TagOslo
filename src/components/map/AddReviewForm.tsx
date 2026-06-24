@@ -53,7 +53,7 @@ export function AddReviewForm({ pinId, onSuccess }: AddReviewFormProps) {
         return;
       }
 
-      setSuccessMessage(data.message ?? "Anmeldelse publisert!");
+      setSuccessMessage(data.message ?? "Vurdering publisert!");
       setComment("");
       setAuthorAlias("");
       onSuccess();

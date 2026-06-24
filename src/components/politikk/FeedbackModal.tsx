@@ -165,7 +165,7 @@ export function FeedbackModal({
             />
 
             <p className="text-xs text-oslo-muted">
-              Respektfull tone kreves. Personangrep og trusler avvises automatisk.
+              Respektfull tone kreves. Grovt språk og personangrep filtreres bort automatisk.
             </p>
 
             {error && (

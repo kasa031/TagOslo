@@ -173,7 +173,33 @@ export async function getPendingModerationItems() {
     }),
   ]);
 
-  return { contents, reviews, feedback };
+  return {
+    contents: contents.map((item) => ({
+      id: item.id,
+      type: item.type,
+      textContent: item.textContent,
+      mediaUrl: item.mediaUrl,
+      authorAlias: item.authorAlias,
+      createdAt: item.createdAt.toISOString(),
+      pin: item.pin,
+    })),
+    reviews: reviews.map((item) => ({
+      id: item.id,
+      rating: item.rating,
+      comment: item.comment,
+      authorAlias: item.authorAlias,
+      createdAt: item.createdAt.toISOString(),
+      pin: item.pin,
+    })),
+    feedback: feedback.map((item) => ({
+      id: item.id,
+      rating: item.rating,
+      comment: item.comment,
+      authorAlias: item.authorAlias,
+      createdAt: item.createdAt.toISOString(),
+      politician: item.politician,
+    })),
+  };
 }
 
 export async function moderateItem(

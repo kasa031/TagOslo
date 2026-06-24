@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Hash } from "lucide-react";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/layout/Logo";
 
 const navItems = [
   { href: "/kart", label: "Kart", activeClass: "bg-oslo-blue text-white" },
@@ -18,9 +18,7 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b-2 border-oslo-border/80 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link href="/" className="group flex min-w-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-oslo-blue text-white">
-            <Hash className="h-5 w-5" strokeWidth={2.5} />
-          </span>
+          <Logo variant="emblem" size={40} priority className="transition group-hover:scale-105" />
           <span className="min-w-0">
             <span className="block text-lg font-bold tracking-tight text-oslo-ink sm:text-xl">
               {APP_NAME}

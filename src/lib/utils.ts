@@ -30,7 +30,7 @@ export function formatDate(date: string | Date): string {
 
 export function parseHashtags(input: string): string[] {
   const matches = input.match(/#[\p{L}\p{N}_]+/gu);
-  return [...new Set((matches ?? []).map((tag) => tag.toLowerCase()))];
+  return [...new Set((matches ?? []).map((tag) => normalizeHashtag(tag)))];
 }
 
 export function isWithinOslo(lat: number, lng: number): boolean {
@@ -43,8 +43,28 @@ export function toLocalDatetimeInput(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-/** Normaliser hashtag fra URL eller brukerinput til `#tag`-format. */
+/** Fjern diakritikk for sammenligning av hashtags (#kafé = #kafe). */
+function stripDiacritics(value: string): string {
+  return value.normalize("NFD").replace(/\p{M}/gu, "");
+}
+
 export function normalizeHashtag(raw: string): string {
-  const tag = raw.trim().replace(/^#/, "").toLowerCase();
+  const tag = stripDiacritics(raw.trim().replace(/^#/, "").toLowerCase());
   return tag ? `#${tag}` : "";
+}
+
+export function hashtagsMatch(a: string, b: string): boolean {
+  return normalizeHashtag(a) === normalizeHashtag(b);
+}
+
+export function formatCheckTimeLabel(checkTime: string): string {
+  const at = new Date(checkTime);
+  const now = new Date();
+  if (Math.abs(at.getTime() - now.getTime()) < 2 * 60 * 1000) return "nå";
+  return new Intl.DateTimeFormat("nb-NO", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(at);
 }

@@ -22,7 +22,7 @@ export async function GET() {
     status: "ok",
     service: "TagOslo",
     contact: CONTACT_EMAIL,
-    mode: checks.database ? "database" : "demo",
+    mode: checks.database ? "database" : "offline",
     readyForProduction,
     checks,
     timestamp: new Date().toISOString(),

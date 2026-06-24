@@ -41,22 +41,28 @@ export function PolitikkPageClient({
 
   const filteredPolls = useMemo(() => {
     if (!bydelFilter) return polls;
-    return polls.filter((poll) => poll.bydel === bydelFilter);
+    return polls.filter(
+      (poll) => poll.bydel === bydelFilter || poll.bydel === "HELE_OSLO",
+    );
   }, [polls, bydelFilter]);
 
-  const filteredPoliticians = useMemo(() => {
-    if (!bydelFilter) return politicians;
-    return politicians.filter(
-      (p) => p.bydel === bydelFilter || p.bydel === null,
-    );
-  }, [politicians, bydelFilter]);
+  // Oslo-politikere velges på bynivå — bydelsfilter gjelder avstemninger, ikke personliste.
+  const filteredPoliticians = politicians;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-oslo-ink sm:text-3xl">Politikk</h1>
-        <p className="mt-1 text-sm text-oslo-muted">Polls og tilbakemeldinger per bydel.</p>
+        <p className="mt-1 text-sm text-oslo-muted">
+          Avstemninger og tilbakemeldinger til Oslo-politikere.
+        </p>
       </div>
+
+      {bydelFilter && activeTab === "feedback" && (
+        <p className="mb-4 rounded-lg bg-oslo-blue-light px-3 py-2 text-sm text-oslo-ink">
+          Bydelsfilteret gjelder avstemninger. Politikere i Oslo styres samlet på bynivå.
+        </p>
+      )}
 
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <BydelSelect
@@ -74,7 +80,7 @@ export function PolitikkPageClient({
           </Button>
           <Button variant="summer" onClick={() => setShowPollModal(true)}>
             <Plus className="h-4 w-4" />
-            Ny poll
+            Ny avstemning
           </Button>
         </div>
       </div>
@@ -94,7 +100,7 @@ export function PolitikkPageClient({
           }`}
         >
           <BarChart3 className="h-4 w-4" />
-          Polls ({filteredPolls.length})
+          Avstemninger ({filteredPolls.length})
         </button>
         <button
           type="button"
@@ -133,8 +139,8 @@ export function PolitikkPageClient({
               <Card className="md:col-span-2">
                 <p className="text-sm text-oslo-muted">
                   {bydelFilter
-                    ? `Ingen polls i ${formatBydelLabel(bydelFilter)} ennå.`
-                    : "Ingen polls ennå — opprett den første!"}
+                    ? `Ingen avstemninger i ${formatBydelLabel(bydelFilter)} ennå.`
+                    : "Ingen avstemninger ennå — opprett den første!"}
                 </p>
                 {bydelFilter && (
                   <Button
@@ -166,21 +172,7 @@ export function PolitikkPageClient({
         <div id="feedback-panel" role="tabpanel" aria-labelledby="feedback-tab" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredPoliticians.length === 0 ? (
             <Card className="sm:col-span-2 lg:col-span-3">
-              <p className="text-sm text-oslo-muted">
-                {bydelFilter
-                  ? `Ingen politikere knyttet til ${formatBydelLabel(bydelFilter)}.`
-                  : "Ingen politikere funnet."}
-              </p>
-              {bydelFilter && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-3"
-                  onClick={() => setBydelFilter("")}
-                >
-                  Vis alle bydeler
-                </Button>
-              )}
+              <p className="text-sm text-oslo-muted">Ingen politikere funnet.</p>
             </Card>
           ) : (
             filteredPoliticians.map((politician, i) => (
@@ -337,12 +329,16 @@ function PollCard({
       )}
 
       {poll.politicians.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {poll.politicians.map((p, i) => (
-            <Badge key={p.id} variant="summer" colorIndex={i + 2}>
-              @{p.name}
-            </Badge>
-          ))}
+        <div className="mt-3">
+          <p className="mb-1.5 text-xs font-medium text-oslo-muted">Spørsmål til</p>
+          <div className="flex flex-wrap gap-1.5">
+            {poll.politicians.map((p, i) => (
+              <Badge key={p.id} variant="summer" colorIndex={i + 2}>
+                {p.name}
+                {p.party ? ` (${p.party})` : ""}
+              </Badge>
+            ))}
+          </div>
         </div>
       )}
 

@@ -172,7 +172,7 @@ export function PinDetailPanel({ pin, sunCondition, onClose }: PinDetailPanelPro
         </div>
 
         <div className="mt-6 space-y-3">
-          <p className="text-sm font-medium text-oslo-ink">Anmeldelser</p>
+          <p className="text-sm font-medium text-oslo-ink">Vurderinger</p>
           {detail?.reviews.map((review) => (
             <div key={review.id} className="rounded-lg border border-oslo-border p-3">
               <div className="flex items-center gap-1">

@@ -1,4 +1,4 @@
-import type { BydelId } from "@/lib/constants";
+import type { BydelId, PollBydelId } from "@/lib/constants";
 
 export type MapPinSummary = {
   id: string;
@@ -38,7 +38,7 @@ export type PollSummary = {
   id: string;
   question: string;
   description: string | null;
-  bydel: BydelId;
+  bydel: PollBydelId;
   createdAt: string;
   totalVotes: number;
   options: Array<{ id: string; label: string; votes: number; percentage: number }>;

@@ -18,13 +18,16 @@ export const BYDELER = [
 
 export type BydelId = (typeof BYDELER)[number]["id"];
 
+/** Bydel for polls og tilbakemeldinger — inkluderer «Hele Oslo». */
+export type PollBydelId = BydelId | "HELE_OSLO";
+
 export const POPULAR_HASHTAGS = [
   "#solservering",
   "#uteservering",
   "#lokalhistorie",
   "#skjultperle",
   "#tursti",
-  "#kafé",
+  "#kafe",
   "#utsikt",
   "#familievennlig",
 ] as const;

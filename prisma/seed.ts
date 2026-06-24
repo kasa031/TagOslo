@@ -419,14 +419,15 @@ async function seedStarterPoll() {
     update: {
       question: "Hvor er den beste solserveringen i Oslo?",
       description: "Hvor er den beste solserveringen?",
-      bydel: "GRUNERLOKKA",
+      bydel: "HELE_OSLO",
       authorAlias: "TagOslo",
+      politicianTags: { deleteMany: {} },
     },
     create: {
       id: pollId,
       question: "Hvor er den beste solserveringen i Oslo?",
       description: "Hvor er den beste solserveringen?",
-      bydel: "GRUNERLOKKA",
+      bydel: "HELE_OSLO",
       authorAlias: "TagOslo",
       options: {
         create: [
@@ -435,9 +436,6 @@ async function seedStarterPoll() {
           { id: `${pollId}-opt-3`, label: "Sagene / Akerselva" },
           { id: `${pollId}-opt-4`, label: "Ekeberg / Gamle Oslo" },
         ],
-      },
-      politicianTags: {
-        create: [{ politicianId: "eirik-lae-solberg" }],
       },
     },
   });

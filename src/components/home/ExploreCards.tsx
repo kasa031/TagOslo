@@ -13,7 +13,7 @@ const EXPLORE = [
     iconBg: "bg-oslo-blue text-white",
   },
   {
-    href: "/kart",
+    href: "/kart?add=1",
     icon: Hash,
     title: "Del & tag",
     description: "Historier, bilder og hashtags.",
@@ -26,7 +26,7 @@ const EXPLORE = [
     href: "/politikk",
     icon: MessageSquare,
     title: "Politikk",
-    description: "Polls og tilbakemeldinger per bydel.",
+    description: "Avstemninger og tilbakemeldinger til politikere.",
     cta: "Se politikk",
     bg: "bg-white",
     accent: "border-t-oslo-red",

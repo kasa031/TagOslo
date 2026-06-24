@@ -5,9 +5,11 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Modal } from "@/components/ui/Modal";
 import { TurnstileWidget } from "@/components/ui/TurnstileWidget";
 
 const turnstileRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+const MAX_IMAGES = 5;
 
 type AddContentModalProps = {
   pinId: string;
@@ -19,7 +21,7 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
   const [mode, setMode] = useState<"TEXT" | "IMAGE" | "VIDEO" | "AUDIO">("TEXT");
   const [textContent, setTextContent] = useState("");
   const [authorAlias, setAuthorAlias] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +33,7 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
     setSuccessMessage("");
 
     if (turnstileRequired && !turnstileToken) {
-      setError("Bekreft at du ikke er en robot.");
+      setError("Bekreft at du er et menneske.");
       return;
     }
 
@@ -52,14 +54,17 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
           }),
         });
       } else {
-        if (!file) {
-          setError("Velg en fil.");
+        if (files.length === 0) {
+          setError("Velg minst én fil.");
           setLoading(false);
           return;
         }
+
         const form = new FormData();
         form.append("type", mode);
-        form.append("file", file);
+        for (const file of files) {
+          form.append("file", file);
+        }
         if (textContent) form.append("textContent", textContent);
         if (authorAlias) form.append("authorAlias", authorAlias);
         if (turnstileToken) form.append("turnstileToken", turnstileToken);
@@ -77,7 +82,7 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
       }
 
       setSuccessMessage(data.message ?? "Lagret!");
-      setTimeout(onSuccess, 1200);
+      setTimeout(onSuccess, 1500);
     } catch {
       setError("Kunne ikke lagre innhold.");
     } finally {
@@ -86,51 +91,52 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-      role="presentation"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="add-content-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="add-content-title" className="text-lg font-bold text-oslo-ink">
-            Legg til innhold
-          </h2>
-          <button type="button" onClick={onClose} className="rounded-xl p-1 hover:bg-oslo-blue-light" aria-label="Lukk">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <Modal onClose={onClose} labelledBy="add-content-title">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 id="add-content-title" className="text-lg font-bold text-oslo-ink">
+          Legg til innhold
+        </h2>
+        <button type="button" onClick={onClose} className="rounded-xl p-1 hover:bg-oslo-blue-light" aria-label="Lukk">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        {successMessage ? (
+      {successMessage ? (
+        <div className="space-y-3">
           <p className="rounded-xl bg-oslo-blue-light px-4 py-3 text-sm font-medium text-oslo-blue">
             {successMessage}
           </p>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {(["TEXT", "IMAGE", "VIDEO", "AUDIO"] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setMode(t)}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
-                    mode === t
-                      ? "bg-oslo-blue text-white"
-                      : "bg-oslo-blue-light text-oslo-blue hover:bg-oslo-blue/10"
-                  }`}
-                >
-                  {t === "TEXT" ? "Tekst" : t === "IMAGE" ? "Bilde" : t === "VIDEO" ? "Video" : "Lyd"}
-                </button>
-              ))}
-            </div>
+          {successMessage.includes("godkjent") && (
+            <p className="text-xs text-oslo-muted">
+              Du får beskjed når innholdet er synlig. Tekst godkjennes automatisk hvis den følger
+              retningslinjene.
+            </p>
+          )}
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(["TEXT", "IMAGE", "VIDEO", "AUDIO"] as const).map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setMode(t);
+                  setFiles([]);
+                }}
+                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                  mode === t
+                    ? "bg-oslo-blue text-white"
+                    : "bg-oslo-blue-light text-oslo-blue hover:bg-oslo-blue/10"
+                }`}
+              >
+                {t === "TEXT" ? "Tekst" : t === "IMAGE" ? "Bilde" : t === "VIDEO" ? "Video" : "Lyd"}
+              </button>
+            ))}
+          </div>
 
-            {mode === "TEXT" ? (
+          {mode === "TEXT" ? (
+            <>
               <Textarea
                 label="Historie eller tips"
                 value={textContent}
@@ -138,65 +144,88 @@ export function AddContentModal({ pinId, onClose, onSuccess }: AddContentModalPr
                 required
                 placeholder="Del lokalhistorie, solforhold eller tips …"
               />
-            ) : (
-              <>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="media-file" className="text-sm font-medium">
-                    {mode === "IMAGE" ? "Bilde" : mode === "VIDEO" ? "Kort video" : "Lydfil"}
-                  </label>
-                  <input
-                    id="media-file"
-                    type="file"
-                    accept={
-                      mode === "IMAGE"
-                        ? "image/*"
-                        : mode === "VIDEO"
-                          ? "video/*"
-                          : "audio/*"
-                    }
-                    onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                    required
-                    className="text-sm"
-                  />
-                  <p className="text-xs text-oslo-muted">
-                    Maks {mode === "IMAGE" ? "5" : mode === "VIDEO" ? "20" : "10"} MB. Media
-                    sjekkes manuelt før publisering.
-                  </p>
-                </div>
-                <Textarea
-                  label="Bildetekst (valgfritt)"
-                  value={textContent}
-                  onChange={(e) => setTextContent(e.target.value)}
+              <p className="text-xs text-oslo-muted">
+                Ren tekst publiseres med en gang hvis den passer retningslinjene. Grovt språk og
+                personangrep stoppes automatisk.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="media-file" className="text-sm font-medium">
+                  {mode === "IMAGE"
+                    ? `Bilder (maks ${MAX_IMAGES})`
+                    : mode === "VIDEO"
+                      ? "Kort video"
+                      : "Lydfil"}
+                </label>
+                <input
+                  id="media-file"
+                  type="file"
+                  accept={
+                    mode === "IMAGE"
+                      ? "image/*"
+                      : mode === "VIDEO"
+                        ? "video/*"
+                        : "audio/*"
+                  }
+                  multiple={mode === "IMAGE"}
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files ?? []);
+                    setFiles(mode === "IMAGE" ? selected.slice(0, MAX_IMAGES) : selected.slice(0, 1));
+                  }}
+                  required
+                  className="text-sm"
                 />
-              </>
-            )}
+                {files.length > 0 && (
+                  <ul className="text-xs text-oslo-muted">
+                    {files.map((file) => (
+                      <li key={`${file.name}-${file.size}`}>
+                        {file.name} ({Math.round(file.size / 1024)} KB)
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p className="text-xs text-oslo-muted">
+                  Maks {mode === "IMAGE" ? "5 MB per bilde" : mode === "VIDEO" ? "20 MB" : "10 MB"}.
+                  {mode === "IMAGE"
+                    ? " Bilder sjekkes manuelt før de vises offentlig."
+                    : " Media sjekkes manuelt før publisering."}
+                </p>
+              </div>
+              <Textarea
+                label="Bildetekst (valgfritt)"
+                value={textContent}
+                onChange={(e) => setTextContent(e.target.value)}
+              />
+            </>
+          )}
 
-            <Input
-              label="Kallenavn (valgfritt)"
-              value={authorAlias}
-              onChange={(e) => setAuthorAlias(e.target.value)}
-            />
+          <Input
+            label="Kallenavn (valgfritt)"
+            value={authorAlias}
+            onChange={(e) => setAuthorAlias(e.target.value)}
+          />
 
-            <TurnstileWidget
-              onVerify={setTurnstileToken}
-              onExpire={() => setTurnstileToken("")}
-            />
+          <TurnstileWidget
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken("")}
+          />
 
-            {error && (
-              <p className="rounded-xl bg-oslo-red-light px-3 py-2 text-sm text-oslo-red">{error}</p>
-            )}
+          {error && (
+            <p className="rounded-xl bg-oslo-red-light px-3 py-2 text-sm text-oslo-red">{error}</p>
+          )}
 
-            <div className="flex gap-3">
-              <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
-                Avbryt
-              </Button>
-              <Button type="submit" className="flex-1" disabled={loading}>
-                {loading ? "Lagrer …" : "Publiser"}
-              </Button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+          <div className="flex gap-3">
+            <Button type="button" variant="secondary" className="flex-1" onClick={onClose}>
+              Avbryt
+            </Button>
+            <Button type="submit" className="flex-1" disabled={loading}>
+              {loading ? "Lagrer …" : mode === "IMAGE" && files.length > 1 ? "Send bilder" : "Send"}
+            </Button>
+          </div>
+        </form>
+      )}
+    </Modal>
   );
 }

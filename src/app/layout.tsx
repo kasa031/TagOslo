@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   authors: [{ name: APP_NAME, url: appUrl }],
   creator: APP_NAME,
   openGraph: {
-    title: APP_NAME,
+    title: `${APP_NAME} – ${APP_TAGLINE}`,
     description: APP_TAGLINE,
     url: appUrl,
     siteName: APP_NAME,
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: APP_NAME,
+    title: `${APP_NAME} – ${APP_TAGLINE}`,
     description: APP_TAGLINE,
     images: ["/og.svg"],
   },
@@ -83,7 +83,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="nb" className={poppins.variable}>
-      <body className="flex min-h-screen flex-col antialiased">        <a href="#main-content" className="skip-link">
+      <body className="flex min-h-screen flex-col antialiased">
+        <a href="#main-content" className="skip-link">
           Hopp til innhold
         </a>
         <Header />

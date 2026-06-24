@@ -17,6 +17,7 @@ type SolPanelProps = {
   error: string | null;
   solNowOnly: boolean;
   checkTime: string;
+  solTimeLabel: string;
   onToggleSolNow: () => void;
   onRefresh: () => void;
   onCheckTimeChange: (value: string) => void;
@@ -32,6 +33,7 @@ export function SolPanel({
   error,
   solNowOnly,
   checkTime,
+  solTimeLabel,
   onToggleSolNow,
   onRefresh,
   onCheckTimeChange,
@@ -102,7 +104,7 @@ export function SolPanel({
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <SunConditionBadge level={oslo.level} label={oslo.label} />
             <span className="text-xs text-oslo-muted">
-              {sunnyCount}/{totalChecked} med sol nå
+              {sunnyCount}/{totalChecked} med sol {solTimeLabel === "nå" ? "nå" : `kl. ${solTimeLabel}`}
             </span>
             {checkedAt && (
               <span className="text-xs text-oslo-muted">
@@ -151,10 +153,16 @@ export function SolPanel({
                   : "border-oslo-border bg-white text-oslo-ink hover:bg-pool-sky/20",
               )}
             >
-              {solNowOnly ? "Kun sol" : "Alle steder"}
+              {solNowOnly
+                ? `Kun sol ${solTimeLabel === "nå" ? "nå" : `kl. ${solTimeLabel}`}`
+                : "Alle steder"}
             </button>
           </div>
         </div>
+
+        <p className="mt-3 text-xs text-oslo-muted">
+          Sol basert på vær og solhøyde fra Yr — ikke byggskygge eller terrasseretning.
+        </p>
       </div>
     </Card>
   );

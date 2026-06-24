@@ -5,6 +5,7 @@ import { ACCENT_PILLS } from "@/lib/summer-colors";
 import { getOsloCenterSun } from "@/lib/yr/sol-status";
 import { LiveOsloStrip } from "@/components/home/LiveOsloStrip";
 import { ExploreCards } from "@/components/home/ExploreCards";
+import { Logo } from "@/components/layout/Logo";
 
 export default async function HomePage() {
   let osloSun = null;
@@ -23,15 +24,19 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute bottom-8 left-8 h-24 w-24 rounded-full bg-oslo-red/20" />
 
         <div className="relative mx-auto max-w-4xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-oslo-cream px-4 py-1.5 text-sm font-bold text-oslo-ink">
+          <Logo
+            variant="skirt"
+            size={160}
+            priority
+            className="mx-auto h-28 w-28 sm:h-40 sm:w-40 drop-shadow-lg"
+          />
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-oslo-cream px-4 py-1.5 text-sm font-bold text-oslo-ink">
             <Sparkles className="h-4 w-4" />
             {APP_TAGLINE}
           </div>
-          <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight sm:text-6xl">
-            {APP_NAME}
-          </h1>
+          <h1 className="sr-only">{APP_NAME}</h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-white/95 sm:text-xl">
-            Kart, sol og meninger fra Oslo.
+            Tag adresser, del lokalhistorie, sjekk sol og si din mening.
           </p>
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
             <Link

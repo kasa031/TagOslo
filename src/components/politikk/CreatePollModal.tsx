@@ -26,9 +26,10 @@ export function CreatePollModal({
 }: CreatePollModalProps) {
   const [question, setQuestion] = useState("");
   const [description, setDescription] = useState("");
-  const [bydel, setBydel] = useState("GRUNERLOKKA");
+  const [bydel, setBydel] = useState("HELE_OSLO");
   const [options, setOptions] = useState(["Ja", "Nei"]);
   const [selectedPoliticians, setSelectedPoliticians] = useState<string[]>([]);
+  const [tagPoliticians, setTagPoliticians] = useState(false);
   const [authorAlias, setAuthorAlias] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -54,7 +55,7 @@ export function CreatePollModal({
           description: description || undefined,
           bydel,
           options: options.filter((o) => o.trim()),
-          politicianIds: selectedPoliticians,
+          politicianIds: tagPoliticians ? selectedPoliticians : [],
           authorAlias: authorAlias || undefined,
           turnstileToken: turnstileToken || undefined,
         }),
@@ -69,7 +70,7 @@ export function CreatePollModal({
 
       onSuccess(data.poll as PollSummary);
     } catch {
-      setError("Kunne ikke opprette poll.");
+      setError("Kunne ikke opprette avstemning.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ export function CreatePollModal({
     <Modal onClose={onClose} labelledBy="create-poll-title">
       <div className="mb-4 flex items-center justify-between">
           <h2 id="create-poll-title" className="text-lg font-semibold">
-            Opprett poll
+            Opprett avstemning
           </h2>
           <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-oslo-blue-light" aria-label="Lukk">
             <X className="h-5 w-5" />
@@ -101,7 +102,12 @@ export function CreatePollModal({
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          <BydelSelect value={bydel} onChange={(e) => setBydel(e.target.value)} />
+          <BydelSelect
+            value={bydel}
+            onChange={(e) => setBydel(e.target.value)}
+            showHeleOsloOption
+            heleOsloOptionLabel="Hele Oslo"
+          />
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Svaralternativer</label>
@@ -142,37 +148,60 @@ export function CreatePollModal({
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium">Tag politikere (valgfritt)</span>
-            <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg border border-oslo-border p-2">
-              {politicians.map((p, i) => {
-                const selected = selectedPoliticians.includes(p.id);
-                return (
-                  <label
-                    key={p.id}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-oslo-blue-light"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selected}
-                      onChange={() => {
-                        setSelectedPoliticians((prev) =>
-                          selected ? prev.filter((id) => id !== p.id) : [...prev, p.id],
-                        );
-                      }}
-                      className="rounded border-oslo-border"
-                    />
-                    <span className="text-sm text-oslo-ink">{p.name}</span>
-                    {p.party && (
-                      <Badge variant="summer" colorIndex={i} className="text-[10px]">
-                        {p.party}
-                      </Badge>
-                    )}
-                  </label>
-                );
-              })}
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-oslo-border px-3 py-3">
+            <input
+              type="checkbox"
+              checked={tagPoliticians}
+              onChange={(e) => {
+                setTagPoliticians(e.target.checked);
+                if (!e.target.checked) setSelectedPoliticians([]);
+              }}
+              className="mt-0.5 rounded border-oslo-border"
+            />
+            <span className="text-sm">
+              <span className="font-medium text-oslo-ink">
+                Retter spørsmålet seg mot en politiker?
+              </span>
+              <span className="mt-0.5 block text-oslo-muted">
+                Bruk dette når du vil stille et politikkspørsmål til vedkommende — ikke
+                for generelle Oslo-spørsmål som solservering eller steder.
+              </span>
+            </span>
+          </label>
+
+          {tagPoliticians && (
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium">Velg politiker(e)</span>
+              <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg border border-oslo-border p-2">
+                {politicians.map((p, i) => {
+                  const selected = selectedPoliticians.includes(p.id);
+                  return (
+                    <label
+                      key={p.id}
+                      className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-oslo-blue-light"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => {
+                          setSelectedPoliticians((prev) =>
+                            selected ? prev.filter((id) => id !== p.id) : [...prev, p.id],
+                          );
+                        }}
+                        className="rounded border-oslo-border"
+                      />
+                      <span className="text-sm text-oslo-ink">{p.name}</span>
+                      {p.party && (
+                        <Badge variant="summer" colorIndex={i} className="text-[10px]">
+                          {p.party}
+                        </Badge>
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           <Input
             label="Kallenavn (valgfritt)"
@@ -196,7 +225,7 @@ export function CreatePollModal({
               Avbryt
             </Button>
             <Button type="submit" className="flex-1" disabled={loading}>
-              {loading ? "Oppretter …" : "Publiser poll"}
+              {loading ? "Oppretter …" : "Publiser avstemning"}
             </Button>
           </div>
         </form>
