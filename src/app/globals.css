@@ -1,0 +1,98 @@
+@import "tailwindcss";
+@import "mapbox-gl/dist/mapbox-gl.css";
+
+@theme {
+  --color-oslo-blue: #004f9f;
+  --color-oslo-blue-dark: #003366;
+  --color-oslo-blue-light: #e8f4ff;
+  --color-oslo-red: #c8102e;
+  --color-oslo-red-light: #ffe8ec;
+  --color-oslo-sand: #fffdf8;
+  --color-oslo-ink: #0f172a;
+  --color-oslo-muted: #475569;
+  --color-oslo-border: #cbd5e1;
+
+  --color-summer-coral: #ff5c7a;
+  --color-summer-turquoise: #00c9c8;
+  --color-summer-sun: #ffd500;
+  --color-summer-lime: #9ae600;
+  --color-summer-orange: #ff8c00;
+  --color-summer-magenta: #ff3d9a;
+  --color-summer-sky: #e0f7ff;
+  --color-summer-cream: #fffbeb;
+  --color-summer-mint: #e8fff4;
+  --color-pool-sky: #7acdee;
+  --color-pool-deep: #0693e3;
+  --color-soft-mist: #f0faff;
+
+  --font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-poppins), "Segoe UI", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-soft-mist);
+  color: var(--color-oslo-ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-oslo-blue);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--color-oslo-blue);
+  color: white;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.mapboxgl-popup-content {
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--color-oslo-border);
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 18px;
+  padding: 4px 8px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out;
+}

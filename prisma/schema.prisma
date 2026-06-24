@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Bydel {
+  ALNA
+  BJERKE
+  FROGNER
+  GAMLE_OSLO
+  GRORUD
+  GRUNERLOKKA
+  NORDRE_AKER
+  NORDSTRAND
+  SAGENE
+  ST_HANSHAUGEN
+  STOVNER
+  SONDRE_NORDSTRAND
+  ULLERN
+  VESTRE_AKER
+  OSTENSJO
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+enum PlaceCategory {
+  UTESTED
+  SPISESTED
+  BYGNING
+  PARK
+  ANNET
+}
+
+model MapPin {
+  id             String           @id @default(cuid())
+  title          String
+  description    String?
+  latitude       Float
+  longitude      Float
+  address        String?
+  bydel          Bydel
+  category       PlaceCategory    @default(ANNET)
+  terraceFacing  String?
+  hashtags       String[]
+  authorAlias    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  contents       PinContent[]
+  reviews        PlaceReview[]
+
+  @@index([bydel])
+  @@index([latitude, longitude])
+}
+
+model PinContent {
+  id               String           @id @default(cuid())
+  pinId            String
+  pin              MapPin           @relation(fields: [pinId], references: [id], onDelete: Cascade)
+  type             ContentType
+  textContent      String?
+  mediaUrl         String?
+  moderationStatus ModerationStatus @default(PENDING)
+  moderationReason String?
+  authorAlias      String?
+  createdAt        DateTime         @default(now())
+
+  @@index([pinId])
+  @@index([moderationStatus])
+}
+
+model PlaceReview {
+  id               String           @id @default(cuid())
+  pinId            String
+  pin              MapPin           @relation(fields: [pinId], references: [id], onDelete: Cascade)
+  rating           Int
+  comment          String?
+  moderationStatus ModerationStatus @default(PENDING)
+  moderationReason String?
+  authorAlias      String?
+  createdAt        DateTime         @default(now())
+
+  @@index([pinId])
+}
+
+model Politician {
+  id        String   @id @default(cuid())
+  name      String
+  party     String?
+  role      String?
+  bydel     Bydel?
+  imageUrl  String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  feedback  PoliticianFeedback[]
+  pollTags  PollPoliticianTag[]
+
+  @@index([bydel])
+  @@index([name])
+}
+
+model PoliticianFeedback {
+  id               String           @id @default(cuid())
+  politicianId     String
+  politician       Politician       @relation(fields: [politicianId], references: [id], onDelete: Cascade)
+  rating           Int
+  comment          String
+  bydel            Bydel
+  moderationStatus ModerationStatus @default(PENDING)
+  moderationReason String?
+  authorAlias      String?
+  createdAt        DateTime         @default(now())
+
+  @@index([politicianId])
+  @@index([bydel])
+}
+
+model Poll {
+  id          String              @id @default(cuid())
+  question    String
+  description String?
+  bydel       Bydel
+  authorAlias String?
+  endsAt      DateTime?
+  createdAt   DateTime            @default(now())
+  options     PollOption[]
+  politicianTags PollPoliticianTag[]
+
+  @@index([bydel])
+  @@index([createdAt])
+}
+
+model PollOption {
+  id     String     @id @default(cuid())
+  pollId String
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  label  String
+  votes  PollVote[]
+
+  @@index([pollId])
+}
+
+model PollVote {
+  id        String     @id @default(cuid())
+  optionId  String
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  voterHash String
+  createdAt DateTime   @default(now())
+
+  @@unique([optionId, voterHash])
+  @@index([optionId])
+}
+
+model PollPoliticianTag {
+  id           String     @id @default(cuid())
+  pollId       String
+  poll         Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  politicianId String
+  politician   Politician @relation(fields: [politicianId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, politicianId])
+}
+
+enum ReportTargetType {
+  PIN_CONTENT
+  PLACE_REVIEW
+  POLITICIAN_FEEDBACK
+}
+
+model ContentReport {
+  id         String           @id @default(cuid())
+  targetType ReportTargetType
+  targetId   String
+  reason     String
+  createdAt  DateTime         @default(now())
+
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}

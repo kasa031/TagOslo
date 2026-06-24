@@ -1,0 +1,30 @@
+{
+  "name": "TagOslo",
+  "short_name": "TagOslo",
+  "description": "Tag steder. Del Oslo. Si din mening.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#004f9f",
+  "theme_color": "#004f9f",
+  "lang": "nb",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

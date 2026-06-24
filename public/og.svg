@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="TagOslo">
+  <defs>
+    <linearGradient id="hero" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004f9f"/>
+      <stop offset="50%" stop-color="#0056b3"/>
+      <stop offset="100%" stop-color="#003366"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#hero)"/>
+  <circle cx="980" cy="120" r="160" fill="#f59e0b" opacity="0.15"/>
+  <circle cx="180" cy="520" r="120" fill="white" opacity="0.08"/>
+  <text x="600" y="260" text-anchor="middle" fill="#f59e0b" font-family="system-ui,sans-serif" font-size="180" font-weight="800">#</text>
+  <text x="600" y="380" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="96" font-weight="800">TagOslo</text>
+  <text x="600" y="460" text-anchor="middle" fill="#bfdbfe" font-family="system-ui,sans-serif" font-size="36" font-weight="500">Tag steder. Del Oslo. Si din mening.</text>
+</svg>
