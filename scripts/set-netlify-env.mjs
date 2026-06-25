@@ -47,3 +47,8 @@ for (const [key, value] of Object.entries(vars)) {
 
 console.log(`\nFerdig: ${set.length} variabler satt for production.`);
 console.log(set.join(", "));
+if (set.includes("HUGGINGFACE_API_TOKEN")) {
+  console.log(
+    "\nHugging Face-token er satt. Gå til Netlify → Deploys → Trigger deploy → Clear cache and deploy site.",
+  );
+}
