@@ -5,12 +5,17 @@
 
 const HF_TOXIC_THRESHOLD = 0.75;
 
+/** Bracket access — Next.js inlines `process.env.X` at build; Netlify secrets arrive at runtime. */
+function runtimeEnv(name: string): string | undefined {
+  return process.env[name];
+}
+
 export type FreeAiProvider = "none" | "huggingface";
 
 export function getFreeAiProvider(): FreeAiProvider {
-  const explicit = process.env.MODERATION_AI?.toLowerCase();
+  const explicit = runtimeEnv("MODERATION_AI")?.toLowerCase();
   if (explicit === "none") return "none";
-  if (process.env.HUGGINGFACE_API_TOKEN) return "huggingface";
+  if (runtimeEnv("HUGGINGFACE_API_TOKEN")) return "huggingface";
   return "none";
 }
 
@@ -19,11 +24,10 @@ export function isFreeAiModerationConfigured(): boolean {
 }
 
 async function checkHuggingFace(text: string): Promise<boolean> {
-  const token = process.env.HUGGINGFACE_API_TOKEN;
+  const token = runtimeEnv("HUGGINGFACE_API_TOKEN");
   if (!token) return true;
 
-  const model =
-    process.env.HUGGINGFACE_MODERATION_MODEL ?? "unitary/toxic-bert";
+  const model = runtimeEnv("HUGGINGFACE_MODERATION_MODEL") ?? "unitary/toxic-bert";
 
   const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
     method: "POST",
