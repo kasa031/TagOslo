@@ -11,6 +11,8 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const huggingfaceTokenPresent = Boolean(process.env["HUGGINGFACE_API_TOKEN"]);
+
   const checks = {
     database: isDatabaseConfigured(),
     mapbox: isMapboxConfigured(),
@@ -18,6 +20,7 @@ export async function GET() {
     turnstile: isTurnstileConfigured(),
     moderationAi: isFreeAiModerationConfigured(),
     moderationAiProvider: getFreeAiProvider(),
+    huggingfaceTokenPresent,
   };
 
   const readyForProduction =
