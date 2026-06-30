@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { APP_DOMAIN, APP_NAME, CONTACT_EMAIL } from "@/lib/constants";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Personvernerklæring",
-  description: `Personvernerklæring for ${APP_NAME} (${APP_DOMAIN}).`,
-};
+export const metadata = pageMetadata(
+  "Personvernerklæring",
+  `Personvernerklæring for ${APP_NAME} (${APP_DOMAIN}). Hvordan vi behandler data når du tagger steder og deltar i avstemninger.`,
+  "/personvern",
+  { noIndex: false },
+);
 
 export default function PersonvernPage() {
   return (

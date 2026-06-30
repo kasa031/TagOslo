@@ -118,18 +118,34 @@ export function KartPageClient({ initialPins }: { initialPins: MapPinSummary[] }
   const [solError, setSolError] = useState<string | null>(null);
 
   useEffect(() => {
-    const raw = searchParams.get("hashtag");
-    if (raw) {
-      const tag = normalizeHashtag(raw);
+    const rawHashtag = searchParams.get("hashtag");
+    if (rawHashtag) {
+      const tag = normalizeHashtag(rawHashtag);
       if (tag) {
         setHashtagFilter(tag);
         setShowFilters(true);
       }
     }
+
+    const rawBydel = searchParams.get("bydel");
+    if (rawBydel && BYDELER.some((b) => b.id === rawBydel)) {
+      setBydelFilter(rawBydel);
+      setShowFilters(true);
+    }
+
+    const rawPin = searchParams.get("pin");
+    if (rawPin) {
+      const pin = pins.find((entry) => entry.id === rawPin);
+      if (pin) {
+        setSelectedPin(pin);
+        setFlyTo({ lat: pin.latitude, lng: pin.longitude });
+      }
+    }
+
     if (searchParams.get("add") === "1") {
       setShowAddModal(true);
     }
-  }, [searchParams]);
+  }, [searchParams, pins]);
 
   const availableHashtags = useMemo(() => {
     const tags = new Set<string>();
@@ -316,7 +332,7 @@ export function KartPageClient({ initialPins }: { initialPins: MapPinSummary[] }
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-oslo-ink sm:text-3xl">Kart</h1>
+        <h1 className="text-2xl font-bold text-oslo-ink sm:text-3xl">Kart over Oslo</h1>
         <p className="mt-1 text-sm text-oslo-muted">
           Finn steder, sjekk sol og del lokalhistorie.
         </p>

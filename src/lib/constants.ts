@@ -58,7 +58,30 @@ export const APP_TAGLINE = "Tag steder. Del Oslo. Si din mening.";
 export const APP_DOMAIN = "tagoslo.no";
 export { CONTACT_EMAIL } from "@/lib/contact";
 export const APP_DESCRIPTION =
-  "Tag steder på kartet, del lokalhistorie, finn solservering og si din mening til politikere i Oslo.";
+  "Gratis kart over Oslo: tag steder, finn sol på uteserveringer, del lokalhistorie med hashtags, og gi tilbakemelding til politikere per bydel.";
+
+export const SEO_KEYWORDS = [
+  "Oslo",
+  "TagOslo",
+  "tagoslo.no",
+  "Oslo kart",
+  "interaktivt kart Oslo",
+  "solservering Oslo",
+  "uteservering sol Oslo",
+  "sol på terrasse Oslo",
+  "lokalhistorie Oslo",
+  "hashtags Oslo",
+  "Oslo bydeler",
+  "Grünerløkka",
+  "Frogner",
+  "Gamle Oslo",
+  "Oslo politikk",
+  "tilbakemelding politikere",
+  "avstemning Oslo",
+  "Oslo bystyre",
+  "skjulte perler Oslo",
+  "Oslo tips",
+] as const;
 
 export const TERRACE_FACING = [
   { id: "", label: "Ukjent / ikke relevant" },

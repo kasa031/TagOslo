@@ -1,12 +1,18 @@
 import type { MetadataRoute } from "next";
+import { getAppUrl } from "@/lib/app-config";
 
 export default function robots(): MetadataRoute.Robots {
+  const base = getAppUrl();
+
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/admin", "/api/"],
-    },
-    sitemap: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://tagoslo.no"}/sitemap.xml`,
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin", "/api/"],
+      },
+    ],
+    sitemap: `${base}/sitemap.xml`,
+    host: base.replace(/^https?:\/\//, ""),
   };
 }

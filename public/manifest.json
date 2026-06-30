@@ -1,7 +1,7 @@
 {
   "name": "TagOslo",
   "short_name": "TagOslo",
-  "description": "Tag steder. Del Oslo. Si din mening.",
+  "description": "Gratis kart over Oslo: tag steder, finn sol på uteserveringer, del lokalhistorie og si din mening.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#004f9f",

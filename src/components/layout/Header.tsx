@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/layout/Logo";
+import { BrandWordmark, Logo } from "@/components/layout/Logo";
 
 const navItems = [
   { href: "/kart", label: "Kart", activeClass: "bg-oslo-blue text-white" },
@@ -18,15 +17,8 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b-2 border-oslo-border/80 bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link href="/" className="group flex min-w-0 items-center gap-2.5">
-          <Logo variant="emblem" size={40} priority className="transition group-hover:scale-105" />
-          <span className="min-w-0">
-            <span className="block text-lg font-bold tracking-tight text-oslo-ink sm:text-xl">
-              {APP_NAME}
-            </span>
-            <span className="hidden truncate text-xs font-medium text-oslo-muted sm:block">
-              Oslo
-            </span>
-          </span>
+          <Logo variant="emblem" size={44} priority className="transition group-hover:scale-105" />
+          <BrandWordmark className="text-xl sm:text-2xl" />
         </Link>
 
         <nav className="flex items-center gap-1 sm:gap-2" aria-label="Hovedmeny">

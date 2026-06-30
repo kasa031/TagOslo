@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { APP_NAME, CONTACT_EMAIL } from "@/lib/constants";
+import { APP_DOMAIN, APP_NAME, CONTACT_EMAIL } from "@/lib/constants";
+import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata = {
-  title: "Brukervilkår",
-  description: `Brukervilkår for ${APP_NAME}.`,
-};
+export const metadata = pageMetadata(
+  "Brukervilkår",
+  `Brukervilkår for ${APP_NAME} (${APP_DOMAIN}). Retningslinjer for innhold, moderering og bruk av kartet.`,
+  "/vilkar",
+);
 
 export default function VilkarPage() {
   return (
