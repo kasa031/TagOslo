@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { APP_DESCRIPTION, APP_NAME, SEO_KEYWORDS } from "@/lib/constants";
 import { getAppUrl } from "@/lib/app-config";
+import { googleSiteVerificationMetadata } from "@/lib/seo/google-verification";
 
 const OG_IMAGE = {
   url: "/og.svg",
@@ -99,8 +100,6 @@ export function rootMetadata(): Metadata {
         "max-snippet": -1,
       },
     },
-    verification: process.env.GOOGLE_SITE_VERIFICATION
-      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
-      : undefined,
+    verification: googleSiteVerificationMetadata(),
   };
 }
